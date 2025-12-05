@@ -1,5 +1,6 @@
 class TaskModel {
   final String userEmail;
+  final String uniqueId;
   final String title;
   final String description;
   final String category;
@@ -9,6 +10,7 @@ class TaskModel {
 
   TaskModel({
     required this.userEmail,
+    required this.uniqueId,
     required this.title,
     required this.description,
     required this.category,
@@ -20,6 +22,7 @@ class TaskModel {
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
       userEmail: json['user_email'],
+      uniqueId: json['unique_id'],
       title: json['title'],
       description: json['description'],
       category: json['category'],
@@ -32,6 +35,7 @@ class TaskModel {
   Map<String, dynamic> toJson() {
     return {
       'user_email': userEmail,
+      'unique_id': uniqueId,
       'title': title,
       'description': description,
       'category': category,
@@ -43,6 +47,7 @@ class TaskModel {
 
   TaskModel copyWith({
     String? userEmail,
+    String? uniqueId,
     String? title,
     String? description,
     String? category,
@@ -52,6 +57,7 @@ class TaskModel {
   }) {
     return TaskModel(
       userEmail: userEmail ?? this.userEmail,
+      uniqueId: uniqueId ?? this.uniqueId,
       title: title ?? this.title,
       description: description ?? this.description,
       category: category ?? this.category,
