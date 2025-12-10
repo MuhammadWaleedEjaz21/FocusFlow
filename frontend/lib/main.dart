@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => MaterialApp(
         theme: lightTheme,
         darkTheme: darkTheme,
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.system,  
         debugShowCheckedModeBanner: false,
         title: 'FocusFlow',
         home: child,

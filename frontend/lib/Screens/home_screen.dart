@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/category_status_provider.dart';
 import 'package:frontend/Widgets/custom_stats_block.dart';
+import 'package:frontend/Widgets/custom_todo_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -173,6 +174,14 @@ class HomeScreen extends StatelessWidget {
                   StatusList(),
                   20.verticalSpace,
                   CategoryList(),
+                  20.verticalSpace,
+                  CustomTodoTile(
+                    title: 'Wake Up Routine',
+                    description: 'Due in 2 hours',
+                    category: 'Work',
+                    priority: 'High',
+                    dueDate: DateTime.now(),
+                  ),
                 ],
               ),
             ),
@@ -182,4 +191,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
