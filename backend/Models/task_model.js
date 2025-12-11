@@ -1,3 +1,4 @@
+// Models/task_model.js
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
@@ -11,6 +12,4 @@ const taskSchema = new mongoose.Schema({
     is_completed: { type: Boolean, required: true },
 });
 
-const taskModel = mongoose.model('tasks', taskSchema);
-
-module.exports = taskModel;
+module.exports = mongoose.model('Task', taskSchema);

@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend/Models/task_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CustomTodoTile extends StatelessWidget {
-  final String title;
-  final String description;
-  final String category;
-  final String priority;
-  final DateTime dueDate;
-  const CustomTodoTile({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.priority,
-    required this.dueDate,
-  });
+final isCompleted = StateProvider((ref) => false);
+
+class CustomTodoTile extends ConsumerWidget {
+  final TaskModel task;
+  const CustomTodoTile({super.key, required this.task});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final completed = ref.watch(isCompleted);
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.r),
@@ -43,11 +39,17 @@ class CustomTodoTile extends StatelessWidget {
         showTrailingIcon: false,
         tilePadding: EdgeInsets.all(7.5.r),
         leading: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.circle_outlined, color: Colors.grey, size: 35.r),
+          onPressed: () {
+            ref.read(isCompleted.notifier).state = !completed;
+          },
+          icon: Icon(
+            completed ? Icons.check_circle_outline : Icons.circle_outlined,
+            color: completed ? Colors.green : Colors.grey,
+            size: 35.r,
+          ),
         ),
         title: Text(
-          title,
+          task.title,
           style: GoogleFonts.inter(
             color: Colors.black54,
             fontSize: 18.sp,
@@ -58,7 +60,7 @@ class CustomTodoTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              description,
+              task.description,
               style: GoogleFonts.inter(color: Colors.grey, fontSize: 15.sp),
             ),
             25.verticalSpace,
@@ -72,7 +74,7 @@ class CustomTodoTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
-                    category,
+                    task.category,
                     style: GoogleFonts.inter(
                       color: Colors.deepPurple,
                       fontWeight: FontWeight.bold,
@@ -87,7 +89,7 @@ class CustomTodoTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
-                    priority,
+                    task.priority,
                     style: GoogleFonts.inter(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
@@ -102,7 +104,7 @@ class CustomTodoTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
-                    dueDate.toString().split(' ')[0],
+                    task.dueDate.toString().split(' ')[0],
                     style: GoogleFonts.inter(
                       color: Colors.orange,
                       fontWeight: FontWeight.bold,
