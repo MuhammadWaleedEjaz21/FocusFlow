@@ -1,7 +1,8 @@
-// Config/db.js
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const MongoURL = 'mongodb+srv://Waleed_Ejaz:Pakistan47@clusteralpha.sam3w6q.mongodb.net/FocusFlowDB?appName=ClusterAlpha';
+const MongoURL = process.env.MONGODB_URI;
 
 const connectDB = async () => {
     try {

@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Models/task_model.dart';
+import 'package:frontend/Providers/task_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final isCompleted = StateProvider((ref) => false);
+final isCompleted = StateProvider.autoDispose.family<bool, TaskModel>(
+  (ref, task) => task.isCompleted,
+);
 
 class CustomTodoTile extends ConsumerWidget {
   final TaskModel task;
@@ -13,7 +16,7 @@ class CustomTodoTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final completed = ref.watch(isCompleted);
+    final completed = ref.watch(isCompleted(task));
 
     return Container(
       decoration: BoxDecoration(
@@ -28,6 +31,7 @@ class CustomTodoTile extends ConsumerWidget {
         ],
       ),
       child: ExpansionTile(
+        backgroundColor: Colors.white,
         collapsedBackgroundColor: Colors.white,
         collapsedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
@@ -39,8 +43,12 @@ class CustomTodoTile extends ConsumerWidget {
         showTrailingIcon: false,
         tilePadding: EdgeInsets.all(7.5.r),
         leading: IconButton(
-          onPressed: () {
-            ref.read(isCompleted.notifier).state = !completed;
+          onPressed: () async {
+            final next = !completed;
+            ref.read(isCompleted(task).notifier).state = next;
+            await ref
+                .read(taskProvider)
+                .updateTask(task.copyWith(isCompleted: next));
           },
           icon: Icon(
             completed ? Icons.check_circle_outline : Icons.circle_outlined,
@@ -51,7 +59,10 @@ class CustomTodoTile extends ConsumerWidget {
         title: Text(
           task.title,
           style: GoogleFonts.inter(
-            color: Colors.black54,
+            color: completed ? Colors.grey : Colors.black54,
+            decoration: completed ? TextDecoration.lineThrough : null,
+            decorationColor: Colors.grey,
+            decorationThickness: 2,
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
           ),
@@ -65,7 +76,7 @@ class CustomTodoTile extends ConsumerWidget {
             ),
             25.verticalSpace,
             Row(
-              spacing: 5.w,
+              spacing: 10.w,
               children: [
                 Container(
                   padding: EdgeInsets.all(5.r),
@@ -143,7 +154,9 @@ class CustomTodoTile extends ConsumerWidget {
                 5.horizontalSpace,
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      ref.read(taskProvider).deleteTask(task);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(

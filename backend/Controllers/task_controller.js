@@ -5,7 +5,7 @@ const taskModel = require('../Models/task_model');
 exports.getTask = async (req, res) => {
     try {
         const tasks = await taskModel.find({ user_email: req.params.user_email });
-        if (res.status == 200) {
+        if (tasks.length > 0) {
             res.status(200).json({
                 message: 'Tasks retrieved successfully',
                 data: tasks
@@ -50,12 +50,11 @@ exports.updateTask = async (req, res) => {
             { new: true }
         );
         
-        if (res.status == 200) {
+        if (updatedTask) {
             res.status(200).json({
                 message: 'Task updated successfully',
                 data: updatedTask
             });
-            
         } else {
             res.status(404).json({
                 message: 'Task not found'
@@ -72,9 +71,9 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
     try {
-        await taskModel.findOneAndDelete({ unique_id: req.params.unique_id });
+        const deletedTask = await taskModel.findOneAndDelete({ unique_id: req.params.unique_id });
 
-        if (res.status == 200) {
+        if (deletedTask) {
             res.status(200).json({
                 message: 'Task deleted successfully'
             });
