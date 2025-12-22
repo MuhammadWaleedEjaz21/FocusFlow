@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/category_status_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
+import 'package:frontend/Widgets/custom_drawer.dart';
 import 'package:frontend/Widgets/custom_stats_block.dart';
 import 'package:frontend/Widgets/custom_todo_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,47 +13,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              curve: Curves.easeInOut,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.deepPurple, Colors.purple],
-                  begin: AlignmentGeometry.centerLeft,
-                  end: AlignmentGeometry.bottomRight,
-                  stops: [0.0, 1.0],
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.person, color: Colors.white, size: 50.r),
-                  10.verticalSpace,
-                  Text(
-                    'Waleed Ejaz',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home', style: GoogleFonts.inter(fontSize: 18.sp)),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: CustomDrawer(),
       body: Column(
         children: [
           Expanded(
@@ -81,14 +42,15 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Builder(
                             builder: (context) {
-                              return IconButton(
+                              return DrawerButton(
                                 onPressed: () {
                                   Scaffold.of(context).openDrawer();
                                 },
-                                icon: Icon(
-                                  Icons.menu,
-                                  color: Colors.white,
-                                  size: 35.r,
+                                style: IconButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  iconSize: 35.r,
+                                  backgroundColor: Colors.purpleAccent
+                                      .withAlpha(50),
                                 ),
                               );
                             },
