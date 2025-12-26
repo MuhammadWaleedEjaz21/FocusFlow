@@ -26,6 +26,16 @@ exports.getTask = async (req, res) => {
 // CREATE TASK
 exports.createTask = async (req, res) => {
     try {
+        const { user_email, unique_id, title, description, category, priority, due_date, is_completed } = req.body;
+        
+        // Validate required fields
+        if (!user_email || !unique_id || !title || !description || !category || !priority || !due_date || is_completed === undefined) {
+            return res.status(400).json({
+                message: 'All fields are required: user_email, unique_id, title, description, category, priority, due_date, is_completed',
+                error: null
+            });
+        }
+        
         const newTask = new taskModel(req.body);
         const savedTask = await newTask.save();
 
@@ -35,6 +45,13 @@ exports.createTask = async (req, res) => {
         });
         
     } catch (error) {
+        // Handle duplicate unique_id error
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: 'Task with this unique_id already exists',
+                error: error.message
+            });
+        }
         res.status(500).json({
             message: 'Failed to create task',
             error: error.message

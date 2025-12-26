@@ -10,6 +10,8 @@ const taskSchema = new mongoose.Schema({
     priority: { type: String, required: true },
     due_date: { type: Date, required: true },
     is_completed: { type: Boolean, required: true },
+}, {
+    timestamps: true // Adds createdAt and updatedAt fields
 });
 
 module.exports = mongoose.model('Task', taskSchema);

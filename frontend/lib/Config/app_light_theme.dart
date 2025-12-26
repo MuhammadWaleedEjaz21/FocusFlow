@@ -12,6 +12,14 @@ final ThemeData lightTheme = ThemeData(
       fontSize: 24.sp,
       fontWeight: FontWeight.w600,
     ),
+    titleMedium: GoogleFonts.inter(
+      color: Colors.black54,
+      decoration: null,
+      decorationColor: Colors.grey,
+      decorationThickness: 2,
+      fontSize: 18.sp,
+      fontWeight: FontWeight.bold,
+    ),
   ),
   shadowColor: Colors.grey.withAlpha(50),
   textButtonTheme: TextButtonThemeData(
@@ -22,4 +30,8 @@ final ThemeData lightTheme = ThemeData(
   ),
   cardColor: Colors.white,
   highlightColor: Colors.grey.withAlpha(50),
+  listTileTheme: ListTileThemeData(
+    tileColor: Colors.deepPurple.shade50,
+    selectedColor: Colors.red.shade50,
+  ),
 );

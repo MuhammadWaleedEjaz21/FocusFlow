@@ -10,17 +10,22 @@ final ThemeData darkTheme = ThemeData(
   progressIndicatorTheme: const ProgressIndicatorThemeData(
     color: Colors.deepPurple,
   ),
-
   textTheme: TextTheme(
     titleLarge: GoogleFonts.inter(
       color: Colors.white,
       fontSize: 24.sp,
       fontWeight: FontWeight.w600,
     ),
+    titleMedium: GoogleFonts.inter(
+      color: Colors.white,
+      decoration: null,
+      decorationColor: Colors.grey,
+      decorationThickness: 2,
+      fontSize: 18.sp,
+      fontWeight: FontWeight.bold,
+    ),
   ),
-
   shadowColor: Colors.transparent,
-
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       foregroundColor: Colors.white,
@@ -30,4 +35,8 @@ final ThemeData darkTheme = ThemeData(
 
   cardColor: const Color.fromARGB(255, 40, 40, 60),
   highlightColor: Colors.grey.withAlpha(50),
+  listTileTheme: ListTileThemeData(
+    tileColor: Colors.deepPurple.withAlpha(50),
+    selectedColor: Colors.red.withAlpha(50),
+  ),
 );

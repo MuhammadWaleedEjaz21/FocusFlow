@@ -23,7 +23,7 @@ class CustomTodoTile extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withAlpha(50),
+            color: Theme.of(context).shadowColor,
             spreadRadius: 2,
             blurRadius: 5,
             offset: Offset(0, 3),
@@ -31,8 +31,8 @@ class CustomTodoTile extends ConsumerWidget {
         ],
       ),
       child: ExpansionTile(
-        backgroundColor: Colors.white,
-        collapsedBackgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
+        collapsedBackgroundColor: Theme.of(context).cardColor,
         collapsedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
@@ -59,7 +59,9 @@ class CustomTodoTile extends ConsumerWidget {
         title: Text(
           task.title,
           style: GoogleFonts.inter(
-            color: completed ? Colors.grey : Colors.black54,
+            color: completed
+                ? Colors.grey
+                : Theme.of(context).textTheme.titleMedium!.color,
             decoration: completed ? TextDecoration.lineThrough : null,
             decorationColor: Colors.grey,
             decorationThickness: 2,

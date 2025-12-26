@@ -49,7 +49,7 @@ class CustomDrawer extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.r),
               ),
-              tileColor: Colors.deepPurple.shade50,
+              tileColor: Theme.of(context).listTileTheme.tileColor,
               leading: Icon(Icons.home_outlined, size: 30.r),
               title: Text(
                 "Home",
@@ -71,7 +71,7 @@ class CustomDrawer extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.r),
               ),
-              tileColor: Colors.deepPurple.shade50,
+              tileColor: Theme.of(context).listTileTheme.tileColor,
               leading: Icon(Icons.settings_outlined, size: 30.r),
               title: Text(
                 "Settings",
@@ -93,7 +93,7 @@ class CustomDrawer extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.r),
               ),
-              tileColor: Colors.red.shade50,
+              tileColor: Theme.of(context).listTileTheme.selectedColor,
               leading: Icon(Icons.logout_outlined, size: 30.r),
               title: Text(
                 "Logout",
