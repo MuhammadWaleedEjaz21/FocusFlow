@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:frontend/Models/task_model.dart';
 import 'package:http/http.dart' as http;
 
+final localTaskList = <TaskModel>[];
+
 class TaskService {
   final String baseURL = "http://10.0.2.2:3000/MyTasks/tasks";
 
-  Future<List<TaskModel>> fetchTasks(String userEmail) async {
+  Future<void> fetchTasks(String userEmail) async {
     final url = Uri.parse('$baseURL/$userEmail');
     final response = await http.get(url);
 
@@ -14,7 +16,9 @@ class TaskService {
 
       final List<dynamic> jsonData = jsonBody["data"];
 
-      return jsonData.map((item) => TaskModel.fromJson(item)).toList();
+      final data = jsonData.map((item) => TaskModel.fromJson(item)).toList();
+      localTaskList.clear();
+      localTaskList.addAll(data);
     } else if (response.statusCode == 404) {
       throw Exception('No Task');
     } else {

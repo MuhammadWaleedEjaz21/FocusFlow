@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/category_status_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
+import 'package:frontend/Services/task_service.dart';
 import 'package:frontend/Widgets/custom_drawer.dart';
 import 'package:frontend/Widgets/custom_stats_block.dart';
 import 'package:frontend/Widgets/custom_todo_tile.dart';
@@ -107,17 +108,19 @@ class HomeScreen extends StatelessWidget {
                         fetchTasksProvider('m.waleedejaz2003@gmail.com'),
                       );
                       final active = taskAsyncValue.maybeWhen(
-                        data: (tasks) =>
-                            tasks.where((task) => !task.isCompleted).length,
+                        data: (tasks) => localTaskList
+                            .where((task) => !task.isCompleted)
+                            .length,
                         orElse: () => 0,
                       );
                       final completed = taskAsyncValue.maybeWhen(
-                        data: (tasks) =>
-                            tasks.where((task) => task.isCompleted).length,
+                        data: (tasks) => localTaskList
+                            .where((task) => task.isCompleted)
+                            .length,
                         orElse: () => 0,
                       );
                       final urgent = taskAsyncValue.maybeWhen(
-                        data: (tasks) => tasks
+                        data: (tasks) => localTaskList
                             .where(
                               (task) =>
                                   !task.isCompleted &&
@@ -253,7 +256,7 @@ class HomeScreen extends StatelessWidget {
                           );
                           final status = ref.watch(statusSelectionProvider);
 
-                          final filteredTasks = tasks.where((task) {
+                          final filteredTasks = localTaskList.where((task) {
                             final matchesCategory =
                                 selectedCategory == 'all' ||
                                 task.category.toLowerCase() ==
