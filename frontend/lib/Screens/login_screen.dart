@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   child: Form(
-                    key: _formKey,
+                    key: formKey,
                     child: Column(
                       children: [
                         FlowFormField(
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 final pref = SharedPreferences.getInstance();
                                 return FlowAuthButton(
                                   onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
+                                    if (formKey.currentState!.validate()) {
                                       try {
                                         final controller = await ref.read(
                                           userProvider.future,

@@ -116,8 +116,11 @@ class HomeScreen extends StatelessWidget {
                             error: (error, stackTrace) => Center(
                               child: Text('Error loading tasks: $error'),
                             ),
-                            loading: () =>
-                                Center(child: CircularProgressIndicator()),
+                            loading: () => Center(
+                              child: CircularProgressIndicator(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
                             data: (tasks) {
                               final totalTasks = tasks.length;
                               final completedTasks = tasks
@@ -217,7 +220,15 @@ class HomeScreen extends StatelessWidget {
                             data: (tasks) {
                               final filteredTasks = filterTasks(tasks, ref);
                               if (filteredTasks.isEmpty) {
-                                return Center(child: Text('No tasks yet'));
+                                return Center(
+                                  child: Text(
+                                    'No tasks yet',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 20.sp,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                );
                               }
                               return ListView.separated(
                                 shrinkWrap: true,
@@ -229,17 +240,35 @@ class HomeScreen extends StatelessWidget {
                                 itemCount: filteredTasks.length,
                               );
                             },
-                            loading: () =>
-                                Center(child: CircularProgressIndicator()),
+                            loading: () => Center(
+                              child: CircularProgressIndicator(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
                             error: (error, stack) => Center(
-                              child: Text('Error loading tasks: $error'),
+                              child: Text(
+                                'Error loading tasks: $error',
+                                style: GoogleFonts.inter(
+                                  fontSize: 20.sp,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ),
                           );
                         },
-                        loading: () =>
-                            Center(child: CircularProgressIndicator()),
+                        loading: () => Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
                         error: (error, stack) => Center(
-                          child: Text('Error loading preferences: $error'),
+                          child: Text(
+                            'Error loading preferences: $error',
+                            style: GoogleFonts.inter(
+                              fontSize: 20.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       );
                     },

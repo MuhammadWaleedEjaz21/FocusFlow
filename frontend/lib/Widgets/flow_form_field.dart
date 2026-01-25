@@ -68,7 +68,8 @@ class FlowFormField extends ConsumerWidget {
                 return 'Please enter a valid email address';
               }
               if (isPassword! &&
-                  labelText == 'Confirm Password' &&
+                  (labelText == 'Confirm Password' ||
+                      labelText == 'New Password') &&
                   value != controller.text) {
                 return 'Passwords do not match';
               }

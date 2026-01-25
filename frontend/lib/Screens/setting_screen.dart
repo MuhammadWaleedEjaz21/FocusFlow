@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/color_scheme_provider.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
+import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_app_bar.dart';
+import 'package:frontend/Widgets/flow_edit_profile_modal.dart';
 import 'package:frontend/Widgets/flow_gradient_button.dart';
 import 'package:frontend/Widgets/flow_header.dart';
 import 'package:frontend/Widgets/flow_setting_menu_section.dart';
 import 'package:frontend/Widgets/flow_switch_list_tile.dart';
+import 'package:frontend/Widgets/main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -130,6 +133,7 @@ class SettingScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  20.verticalSpace,
                   Consumer(
                     builder: (context, ref, child) {
                       Future.microtask(() async {
@@ -194,48 +198,111 @@ class SettingScreen extends StatelessWidget {
                     },
                   ),
                   20.verticalSpace,
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final isloggedIn = ref
+                          .watch(prefProvider)
+                          .maybeWhen(
+                            data: (prefs) {
+                              return prefs.getBool('isLoggedIn') ?? false;
+                            },
+                            orElse: () {
+                              return false;
+                            },
+                          );
+                      return isloggedIn
+                          ? Text(
+                              'ACCOUNT',
+                              style: GoogleFonts.inter(
+                                fontSize: 20.sp,
+                                color: Colors.blueGrey.shade500,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : SizedBox.shrink();
+                    },
+                  ),
+                  20.verticalSpace,
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final isloggedIn = ref
+                          .watch(prefProvider)
+                          .maybeWhen(
+                            data: (prefs) {
+                              return prefs.getBool('isLoggedIn') ?? false;
+                            },
+                            orElse: () {
+                              return false;
+                            },
+                          );
+                      return isloggedIn
+                          ? FlowSettingMenuSection(
+                              children: [
+                                ListTile(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return FlowEditProfileModal();
+                                      },
+                                    );
+                                  },
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Icon(
+                                    Icons.person_outline,
+                                    size: 40,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  title: Text(
+                                    'Edit Profile',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 20.r,
+                                      color: Theme.of(context).hintColor,
+                                    ),
+                                  ),
+                                ),
+                                10.verticalSpace,
+                                ListTile(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return FlowChangePasswordModal();
+                                      },
+                                    );
+                                  },
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Icon(
+                                    Icons.lock_outline,
+                                    size: 40,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  title: Text(
+                                    'Change Password',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 20.r,
+                                      color: Theme.of(context).hintColor,
+                                    ),
+                                  ),
+                                ),
+                                10.verticalSpace,
+                              ],
+                            )
+                          : SizedBox.shrink();
+                    },
+                  ),
+                  20.verticalSpace,
                   Text(
-                    'ACCOUNT',
+                    'APP SETTINGS',
                     style: GoogleFonts.inter(
                       fontSize: 20.sp,
                       color: Colors.blueGrey.shade500,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  20.verticalSpace,
                   FlowSettingMenuSection(
                     children: [
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          Icons.person_outline,
-                          size: 40,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        title: Text(
-                          'Edit Profile',
-                          style: GoogleFonts.inter(
-                            fontSize: 20.r,
-                            color: Theme.of(context).hintColor,
-                          ),
-                        ),
-                      ),
-                      10.verticalSpace,
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          Icons.lock_outline,
-                          size: 40,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        title: Text(
-                          'Change Password',
-                          style: GoogleFonts.inter(
-                            fontSize: 20.r,
-                            color: Theme.of(context).hintColor,
-                          ),
-                        ),
-                      ),
-                      10.verticalSpace,
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(
@@ -253,6 +320,7 @@ class SettingScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  20.verticalSpace,
                 ],
               ),
             ),

@@ -41,7 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
@@ -85,7 +85,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               30.verticalSpace,
               Form(
-                key: _formKey,
+                key: formKey,
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 20.w),
                   padding: EdgeInsets.all(30.r),
@@ -135,7 +135,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             builder: (context, ref, child) {
                               return FlowAuthButton(
                                 onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
+                                  if (formKey.currentState!.validate()) {
                                     try {
                                       final user = UserModel(
                                         fullName: _fullNameController.text,
