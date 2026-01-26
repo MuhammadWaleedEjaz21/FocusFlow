@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:frontend/Models/user_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -77,6 +76,42 @@ class UserService {
       final responseBody = jsonDecode(response.body);
       return responseBody['token'];
     } else {
+      throw Exception('${jsonDecode(response.body)['message']}');
+    }
+  }
+
+  Future<void> sendOTP(String email) async {
+    final url = Uri.parse('$baseUrl/send-otp');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'userEmail': email}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('${jsonDecode(response.body)['message']}');
+    }
+  }
+
+  Future<void> verifyOTP(String email, String otp) async {
+    final url = Uri.parse('$baseUrl/verify-otp');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'userEmail': email, 'otp': otp}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('${jsonDecode(response.body)['message']}');
+    }
+  }
+
+  Future<void> resetPassword(String email, String newPassword) async {
+    final url = Uri.parse('$baseUrl/reset-password');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'userEmail': email, 'newPassword': newPassword}),
+    );
+    if (response.statusCode != 200) {
       throw Exception('${jsonDecode(response.body)['message']}');
     }
   }

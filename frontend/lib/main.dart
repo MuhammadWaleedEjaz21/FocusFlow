@@ -4,13 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/color_scheme_provider.dart';
 import 'package:frontend/Providers/lang_selection_provider.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
-import 'package:frontend/Providers/screen_navigation_provider.dart';
+import 'package:frontend/Screens/splash_screen.dart';
 import 'package:frontend/Services/push_notification_service.dart';
-import 'package:frontend/Widgets/flow_drawer.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,16 +58,7 @@ class MyApp extends ConsumerWidget {
         theme: lightTheme[schemeIndex],
         darkTheme: darkTheme[schemeIndex],
         themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-        home: Scaffold(
-          key: scaffoldKey,
-          drawer: const FlowDrawer(),
-          body: Consumer(
-            builder: (context, ref, child) {
-              final screenIndex = ref.watch(screenNavigationProvider);
-              return screens(context)[screenIndex].screenWidget;
-            },
-          ),
-        ),
+        home: const SplashScreen(),
       ),
     );
   }

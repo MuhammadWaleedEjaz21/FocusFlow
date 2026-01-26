@@ -7,12 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 final prefProvider = FutureProvider<SharedPreferences>(
   (ref) => SharedPreferences.getInstance(),
 );
+
 final tokenProvider = FutureProvider<String>((ref) async {
   final prefs = await ref.watch(prefProvider.future);
   return prefs.getString('authToken') ?? '';
 });
 
 final userServiceProvider = Provider((ref) => UserService());
+
 final fetchuserProvider = FutureProvider.family<UserModel, String>((
   ref,
   userEmail,
@@ -28,20 +30,20 @@ final userProvider = FutureProvider<UserController>((ref) async {
 });
 
 class UserController {
-  Ref ref;
-  String token;
+  final Ref ref;
+  final String token;
+
   UserController(this.ref, this.token);
+
   Future<void> updateUser(UserModel user) async {
     final userService = ref.watch(userServiceProvider);
     await userService.updateUserData(user, token);
-
     ref.invalidate(fetchuserProvider.call(user.email));
   }
 
   Future<void> deleteUser(String email) async {
     final userService = ref.watch(userServiceProvider);
     await userService.deleteUser(email, token);
-
     ref.invalidate(fetchuserProvider.call(email));
   }
 
@@ -53,10 +55,11 @@ class UserController {
   Future<String> loginUser(String email, String password) async {
     final userService = ref.watch(userServiceProvider);
     final token = await userService.loginUser(email, password);
+
     final prefs = await ref.watch(prefProvider.future);
-    prefs.setString('authToken', token);
-    prefs.setString('userEmail', email);
-    prefs.setBool('isLoggedIn', true);
+    await prefs.setString('authToken', token);
+    await prefs.setString('userEmail', email);
+    await prefs.setBool('isLoggedIn', true);
 
     ref.invalidate(prefProvider);
     ref.invalidate(tokenProvider);
@@ -70,5 +73,20 @@ class UserController {
     ref.invalidate(fetchuserProvider);
     ref.invalidate(tasksListProvider);
     ref.invalidate(tokenProvider);
+  }
+
+  Future<void> sendOTP(String email) async {
+    final userService = ref.watch(userServiceProvider);
+    await userService.sendOTP(email);
+  }
+
+  Future<void> verifyOTP(String email, String otp) async {
+    final userService = ref.watch(userServiceProvider);
+    await userService.verifyOTP(email, otp);
+  }
+
+  Future<void> resetPassword(String email, String newPassword) async {
+    final userService = ref.watch(userServiceProvider);
+    await userService.resetPassword(email, newPassword);
   }
 }

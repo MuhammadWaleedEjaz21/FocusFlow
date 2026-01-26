@@ -9,6 +9,7 @@ import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Services/task_filter_service.dart';
 import 'package:frontend/Widgets/flow_app_bar.dart';
 import 'package:frontend/Widgets/flow_category_button.dart';
+import 'package:frontend/Widgets/flow_drawer.dart';
 import 'package:frontend/Widgets/flow_header.dart';
 import 'package:frontend/Widgets/flow_modal.dart';
 import 'package:frontend/Widgets/flow_overview_block.dart';
@@ -36,6 +37,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      drawer: const FlowDrawer(),
       body: Column(
         children: [
           const Expanded(child: _HomeHeader()),

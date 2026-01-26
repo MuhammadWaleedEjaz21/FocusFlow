@@ -43,7 +43,11 @@ class FlowModal extends StatelessWidget {
             children: [
               Text(
                 AppLocalizations.of(context)!.newTask,
-                style: GoogleFonts.inter(fontSize: 30.sp),
+                style: GoogleFonts.inter(
+                  fontSize: 30.sp,
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               30.verticalSpace,
               FlowFormField(
@@ -94,11 +98,11 @@ class FlowModal extends StatelessWidget {
                                 backgroundColor:
                                     categorySelection == e.toLowerCase()
                                     ? Theme.of(context).primaryColor
-                                    : Colors.grey.shade200,
+                                    : Theme.of(context).shadowColor,
                                 foregroundColor:
                                     categorySelection == e.toLowerCase()
                                     ? Colors.white
-                                    : Colors.blueGrey.shade900,
+                                    : Theme.of(context).primaryColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.r),
                                 ),
@@ -144,10 +148,10 @@ class FlowModal extends StatelessWidget {
                             elevation: 0,
                             backgroundColor: prioritySelection == 'low'
                                 ? Colors.green
-                                : Colors.grey.shade200,
+                                : Theme.of(context).shadowColor,
                             foregroundColor: prioritySelection == 'low'
                                 ? Colors.white
-                                : Colors.blueGrey.shade900,
+                                : Theme.of(context).primaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.r),
                             ),
@@ -166,10 +170,10 @@ class FlowModal extends StatelessWidget {
                           elevation: 0,
                           backgroundColor: prioritySelection == 'medium'
                               ? Colors.orange
-                              : Colors.grey.shade200,
+                              : Theme.of(context).shadowColor,
                           foregroundColor: prioritySelection == 'medium'
                               ? Colors.white
-                              : Colors.blueGrey.shade900,
+                              : Theme.of(context).primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.r),
                           ),
@@ -191,10 +195,10 @@ class FlowModal extends StatelessWidget {
                             elevation: 0,
                             backgroundColor: prioritySelection == 'high'
                                 ? Colors.red
-                                : Colors.grey.shade200,
+                                : Theme.of(context).shadowColor,
                             foregroundColor: prioritySelection == 'high'
                                 ? Colors.white
-                                : Colors.blueGrey.shade900,
+                                : Theme.of(context).primaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.r),
                             ),
@@ -234,8 +238,8 @@ class FlowModal extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
-                      backgroundColor: Colors.grey.shade200,
-                      foregroundColor: Colors.blueGrey.shade900,
+                      backgroundColor: Theme.of(context).shadowColor,
+                      foregroundColor: Theme.of(context).primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.r),
                       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend/main.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlowAppBar extends StatelessWidget {
@@ -18,7 +17,7 @@ class FlowAppBar extends StatelessWidget {
             iconSize: WidgetStatePropertyAll(40.r),
           ),
           onPressed: () {
-            scaffoldKey.currentState?.openDrawer();
+            Scaffold.of(context).openDrawer();
           },
         ),
         if (title != null) ...[

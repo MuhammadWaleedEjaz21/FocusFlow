@@ -7,6 +7,7 @@ import 'package:frontend/Providers/push_notifications_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_app_bar.dart';
 import 'package:frontend/Widgets/flow_change_password_model.dart';
+import 'package:frontend/Widgets/flow_drawer.dart';
 import 'package:frontend/Widgets/flow_edit_profile_modal.dart';
 import 'package:frontend/Widgets/flow_gradient_button.dart';
 import 'package:frontend/Widgets/flow_header.dart';
@@ -22,6 +23,7 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      drawer: const FlowDrawer(),
       body: Column(
         children: [
           Expanded(
@@ -37,6 +39,7 @@ class SettingScreen extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15.w),
               child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 5.w),
                 children: [
                   30.verticalSpace,
                   const _AppearanceSection(),
@@ -63,7 +66,6 @@ class _AppearanceSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(isDarkModeProvider);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

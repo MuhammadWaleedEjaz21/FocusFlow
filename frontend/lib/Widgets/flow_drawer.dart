@@ -132,7 +132,12 @@ class FlowDrawer extends ConsumerWidget {
               isSelected: screenSelection == index,
               onTap: () {
                 ref.read(screenNavigationProvider.notifier).state = index;
-                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => screens(context)[index].screenWidget,
+                  ),
+                );
               },
             ),
           ),
