@@ -5,6 +5,7 @@ import 'package:frontend/Models/user_model.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_auth_button.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlowChangePasswordModal extends ConsumerWidget {
@@ -38,7 +39,7 @@ class FlowChangePasswordModal extends ConsumerWidget {
           padding: EdgeInsets.all(20.r),
           children: [
             Text(
-              'Change Password',
+              AppLocalizations.of(context)!.changePassword,
               style: GoogleFonts.inter(
                 fontSize: 30.sp,
                 fontWeight: FontWeight.bold,
@@ -47,22 +48,24 @@ class FlowChangePasswordModal extends ConsumerWidget {
             ),
             20.verticalSpace,
             FlowFormField(
-              labelText: 'Old Password',
-              hintText: 'Enter your Old password',
+              labelText: AppLocalizations.of(context)!.oldPassword,
+              hintText: AppLocalizations.of(context)!.oldPassworddescription,
               controller: oldPasswordController,
               isPassword: true,
             ),
             20.verticalSpace,
             FlowFormField(
-              labelText: 'New Password',
-              hintText: 'Enter your New password',
+              labelText: AppLocalizations.of(context)!.newPassword,
+              hintText: AppLocalizations.of(context)!.newPassworddescription,
               controller: newPasswordController,
               isPassword: true,
             ),
             20.verticalSpace,
             FlowFormField(
-              labelText: 'Confirm Password',
-              hintText: 'Enter your Confirm password',
+              labelText: AppLocalizations.of(context)!.confirmNewPassword,
+              hintText: AppLocalizations.of(
+                context,
+              )!.confirmNewPassworddescription,
               controller: confirmPasswordController,
               isPassword: true,
             ),
@@ -82,12 +85,9 @@ class FlowChangePasswordModal extends ConsumerWidget {
                   }
 
                   try {
-                    // Verify old password by attempting to login
                     await ref
                         .read(userServiceProvider)
                         .loginUser(userEmail, oldPasswordController.text);
-
-                    // If login successful, proceed to update password
                     userController.maybeWhen(
                       data: (user) async {
                         await ref.read(userProvider.future).then((value) {
@@ -109,7 +109,7 @@ class FlowChangePasswordModal extends ConsumerWidget {
                   }
                 }
               },
-              text: 'Save',
+              text: AppLocalizations.of(context)!.save,
             ),
             20.verticalSpace,
           ],

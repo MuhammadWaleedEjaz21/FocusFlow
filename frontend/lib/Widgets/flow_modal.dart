@@ -7,6 +7,7 @@ import 'package:frontend/Providers/catergory_selection_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlowModal extends StatelessWidget {
@@ -40,23 +41,26 @@ class FlowModal extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('New Task', style: GoogleFonts.inter(fontSize: 30.sp)),
+              Text(
+                AppLocalizations.of(context)!.newTask,
+                style: GoogleFonts.inter(fontSize: 30.sp),
+              ),
               30.verticalSpace,
               FlowFormField(
-                labelText: 'Title',
-                hintText: 'Enter task title',
+                labelText: AppLocalizations.of(context)!.taskTitle,
+                hintText: AppLocalizations.of(context)!.taskTitle,
                 controller: titleController,
               ),
               20.verticalSpace,
               FlowFormField(
-                labelText: 'Description',
-                hintText: 'Enter task description',
+                labelText: AppLocalizations.of(context)!.description,
+                hintText: AppLocalizations.of(context)!.description,
                 controller: descriptionController,
                 maxLines: 4,
               ),
               20.verticalSpace,
               Text(
-                'Category',
+                AppLocalizations.of(context)!.category,
                 style: GoogleFonts.inter(
                   fontSize: 17.5.sp,
                   color: Theme.of(context).primaryColor,
@@ -115,7 +119,7 @@ class FlowModal extends StatelessWidget {
               ),
               20.verticalSpace,
               Text(
-                'Priority',
+                AppLocalizations.of(context)!.priority,
                 style: GoogleFonts.inter(
                   fontSize: 17.5.sp,
                   color: Theme.of(context).primaryColor,
@@ -205,7 +209,7 @@ class FlowModal extends StatelessWidget {
               ),
               20.verticalSpace,
               Text(
-                'Due Date',
+                AppLocalizations.of(context)!.dueDate,
                 style: GoogleFonts.inter(
                   fontSize: 17.5.sp,
                   color: Theme.of(context).primaryColor,
@@ -237,7 +241,7 @@ class FlowModal extends StatelessWidget {
                       ),
                       textStyle: GoogleFonts.inter(fontSize: 15.sp),
                     ),
-                    child: Text('Select Due Date'),
+                    child: Text(AppLocalizations.of(context)!.dueDate),
                   );
                 },
               ),
@@ -291,7 +295,7 @@ class FlowModal extends StatelessWidget {
                             ),
                             textStyle: GoogleFonts.inter(fontSize: 18.sp),
                           ),
-                          child: Text('Save'),
+                          child: Text(AppLocalizations.of(context)!.save),
                         );
                       },
                     ),

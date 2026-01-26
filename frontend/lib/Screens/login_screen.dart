@@ -5,6 +5,7 @@ import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Screens/signup_screen.dart';
 import 'package:frontend/Widgets/flow_auth_button.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               5.verticalSpace,
               Text(
-                'Sign in to continue',
+                AppLocalizations.of(context)!.loginStatment,
                 style: GoogleFonts.inter(
                   fontSize: 20.sp,
                   color: Colors.blueGrey.shade600,
@@ -99,13 +100,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         FlowFormField(
-                          labelText: 'Email',
+                          labelText: AppLocalizations.of(context)!.email,
                           hintText: 'you@example.com',
                           controller: _emailController,
                         ),
                         30.verticalSpace,
                         FlowFormField(
-                          labelText: 'Password',
+                          labelText: AppLocalizations.of(context)!.password,
                           hintText: '.......',
                           controller: _passwordController,
                           isPassword: true,
@@ -118,7 +119,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextButton.styleFrom(
                                 foregroundColor: Theme.of(context).primaryColor,
                               ),
-                              child: Text('Forgot Password?'),
+                              child: Text(
+                                AppLocalizations.of(context)!.forgotPassword,
+                              ),
                             ),
                           ],
                         ),
@@ -187,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       }
                                     }
                                   },
-                                  text: 'Login',
+                                  text: AppLocalizations.of(context)!.login,
                                 );
                               },
                             ),
@@ -198,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Don\'t have an account?',
+                              AppLocalizations.of(context)!.dontHaveAccount,
                               style: GoogleFonts.inter(
                                 color: Theme.of(context).hintColor,
                                 fontSize: 20.sp,
@@ -219,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              child: Text('Sign Up'),
+                              child: Text(AppLocalizations.of(context)!.signUp),
                             ),
                           ],
                         ),

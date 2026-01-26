@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_auth_button.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlowEditProfileModal extends ConsumerWidget {
@@ -38,7 +39,7 @@ class FlowEditProfileModal extends ConsumerWidget {
         padding: EdgeInsets.all(20.r),
         children: [
           Text(
-            'Edit Profile',
+            AppLocalizations.of(context)!.profile,
             style: GoogleFonts.inter(
               fontSize: 30.sp,
               fontWeight: FontWeight.bold,
@@ -47,8 +48,8 @@ class FlowEditProfileModal extends ConsumerWidget {
           ),
           20.verticalSpace,
           FlowFormField(
-            labelText: 'Name',
-            hintText: 'Enter your New name',
+            labelText: AppLocalizations.of(context)!.newName,
+            hintText: AppLocalizations.of(context)!.newNamedescription,
             controller: nameController,
           ),
           20.verticalSpace,
@@ -67,7 +68,7 @@ class FlowEditProfileModal extends ConsumerWidget {
               );
               Navigator.pop(context);
             },
-            text: 'Save',
+            text: AppLocalizations.of(context)!.save,
           ),
           20.verticalSpace,
         ],

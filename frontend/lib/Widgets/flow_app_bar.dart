@@ -24,7 +24,7 @@ class FlowAppBar extends StatelessWidget {
         if (title != null) ...[
           25.horizontalSpace,
           Text(
-            'Settings',
+            title!,
             style: GoogleFonts.inter(
               fontSize: 35.sp,
               color: Colors.white,

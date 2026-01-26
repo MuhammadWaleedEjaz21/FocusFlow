@@ -43,6 +43,9 @@ dependencies:
   shared_preferences: ^2.5.4
   flutter_local_notifications: ^19.5.0
   timezone: ^0.10.1
+  flutter_localizations:
+    sdk: flutter
+  intl:
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +63,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

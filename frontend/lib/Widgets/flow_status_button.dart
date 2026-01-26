@@ -6,17 +6,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 class FlowStatusButton extends ConsumerWidget {
   final String title;
-  const FlowStatusButton({super.key, required this.title});
+  final String value;
+
+  const FlowStatusButton({super.key, required this.title, required this.value});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statusSelection = ref.watch(statusSelectionProvider);
-    final isSelected = statusSelection == title.toLowerCase();
+    final isSelected = statusSelection == value;
     return Expanded(
       child: ElevatedButton(
         onPressed: () {
-          ref.read(statusSelectionProvider.notifier).state = title
-              .toLowerCase();
+          ref.read(statusSelectionProvider.notifier).state = value;
         },
         style: ElevatedButton.styleFrom(
           elevation: 0,

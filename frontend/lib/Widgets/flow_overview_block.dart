@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Widgets/flow_status_block.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlowOverviewBlock extends StatelessWidget {
@@ -41,7 +42,7 @@ class FlowOverviewBlock extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  'Overview',
+                  AppLocalizations.of(context)!.overview,
                   style: GoogleFonts.inter(
                     fontSize: 30.r,
                     fontWeight: FontWeight.bold,
@@ -83,19 +84,19 @@ class FlowOverviewBlock extends StatelessWidget {
               spacing: 5.w,
               children: [
                 FlowStatusBlock(
-                  categoryTitle: 'Active',
+                  categoryTitle: AppLocalizations.of(context)!.active,
                   icon: Icons.circle_outlined,
                   count: activeTasks,
                   color: Theme.of(context).primaryColor,
                 ),
                 FlowStatusBlock(
-                  categoryTitle: 'Completed',
+                  categoryTitle: AppLocalizations.of(context)!.completed,
                   icon: Icons.check_circle_outline,
                   count: completedTasks,
                   color: Colors.green,
                 ),
                 FlowStatusBlock(
-                  categoryTitle: 'Urgent',
+                  categoryTitle: AppLocalizations.of(context)!.urgent,
                   icon: Icons.error_outline,
                   count: urgentTasks,
                   color: Colors.red,

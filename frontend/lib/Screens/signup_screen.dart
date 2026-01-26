@@ -6,6 +6,7 @@ import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Screens/login_screen.dart';
 import 'package:frontend/Widgets/flow_auth_button.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -68,7 +69,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               20.verticalSpace,
               Text(
-                'Create Account',
+                AppLocalizations.of(context)!.createAccount,
                 style: GoogleFonts.inter(
                   fontSize: 30.sp,
                   fontWeight: FontWeight.bold,
@@ -77,7 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               5.verticalSpace,
               Text(
-                'Sign up to continue',
+                AppLocalizations.of(context)!.signUpStatment,
                 style: GoogleFonts.inter(
                   fontSize: 20.sp,
                   color: Colors.blueGrey.shade600,
@@ -104,26 +105,28 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Column(
                     children: [
                       FlowFormField(
-                        labelText: 'Full Name',
+                        labelText: AppLocalizations.of(context)!.fullName,
                         hintText: 'John Doe',
                         controller: _fullNameController,
                       ),
                       30.verticalSpace,
                       FlowFormField(
-                        labelText: 'Email',
+                        labelText: AppLocalizations.of(context)!.email,
                         hintText: 'you@example.com',
                         controller: _emailController,
                       ),
                       30.verticalSpace,
                       FlowFormField(
-                        labelText: 'Password',
+                        labelText: AppLocalizations.of(context)!.password,
                         hintText: '.......',
                         controller: _passwordController,
                         isPassword: true,
                       ),
                       30.verticalSpace,
                       FlowFormField(
-                        labelText: 'Confirm Password',
+                        labelText: AppLocalizations.of(
+                          context,
+                        )!.confirmPassword,
                         hintText: '.......',
                         controller: _confirmPasswordController,
                         isPassword: true,
@@ -186,7 +189,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     }
                                   }
                                 },
-                                text: 'Sign Up',
+                                text: AppLocalizations.of(context)!.signUp,
                               );
                             },
                           ),
@@ -197,7 +200,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Already have an account?',
+                            AppLocalizations.of(context)!.haveAccount,
                             style: GoogleFonts.inter(
                               color: Colors.blueGrey.shade600,
                               fontSize: 20.sp,
@@ -218,7 +221,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            child: Text('Login'),
+                            child: Text(AppLocalizations.of(context)!.login),
                           ),
                         ],
                       ),

@@ -14,11 +14,20 @@ import 'package:frontend/Widgets/flow_modal.dart';
 import 'package:frontend/Widgets/flow_overview_block.dart';
 import 'package:frontend/Widgets/flow_status_button.dart';
 import 'package:frontend/Widgets/flow_task_item.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final _categorySelectionProvider = StateProvider<String>((ref) => '');
-final _prioritySelectionProvider = StateProvider<String>((ref) => '');
-final _pickedDateProvider = StateProvider<DateTime?>((ref) => null);
+final _modalCategoryProvider = StateProvider.autoDispose<String>((ref) => '');
+final _modalPriorityProvider = StateProvider.autoDispose<String>((ref) => '');
+final _modalDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
+
+final _currentUserEmailProvider = FutureProvider.autoDispose<String>((
+  ref,
+) async {
+  final prefs = await ref.watch(prefProvider.future);
+  if (prefs.getBool('isLoggedIn') != true) return '';
+  return prefs.getString('userEmail') ?? '';
+});
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -29,257 +38,236 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          Expanded(
-            child: FlowHeader(
-              children: [
-                45.verticalSpace,
-                FlowAppBar(
-                  actions: [
-                    IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return FlowModal(
-                              categorySelectionProvider:
-                                  _categorySelectionProvider,
-                              prioritySelectionProvider:
-                                  _prioritySelectionProvider,
-                              pickedDateProvider: _pickedDateProvider,
-                              titleController: TextEditingController(),
-                              descriptionController: TextEditingController(),
-                            );
-                          },
-                        );
-                      },
-                      style: IconButton.styleFrom(
-                        foregroundColor: Theme.of(context).primaryColor,
-                        backgroundColor: Colors.white,
-                        iconSize: 40.r,
-                      ),
-                      icon: Icon(Icons.add),
-                    ),
-                  ],
-                ),
-                25.verticalSpace,
-                Text(
-                  DateTime.now().toString().split(' ')[0],
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 17.5.sp,
-                  ),
-                ),
-                Text(
-                  'FocusFlow',
-                  style: GoogleFonts.inter(
-                    fontSize: 35.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const Expanded(child: _HomeHeader()),
           Expanded(
             flex: 3,
-            child: SizedBox(
-              child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 15.w),
-                children: [
-                  30.verticalSpace,
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final prefsAsync = ref.watch(prefProvider);
-                      return prefsAsync.when(
-                        error: (error, stackTrace) => Center(
-                          child: Text('Error loading preferences: $error'),
-                        ),
-                        loading: () =>
-                            Center(child: CircularProgressIndicator()),
-                        data: (prefs) {
-                          final userEmail = prefs.getString('userEmail') ?? '';
-                          final isLoggedIn =
-                              prefs.getBool('isLoggedIn') ?? false;
-
-                          if (!isLoggedIn || userEmail.isEmpty) {
-                            return FlowOverviewBlock(
-                              completionPercentage: 0,
-                              activeTasks: 0,
-                              completedTasks: 0,
-                              urgentTasks: 0,
-                            );
-                          }
-                          final tasksAsyncValue = ref.watch(
-                            tasksListProvider(userEmail),
-                          );
-                          return tasksAsyncValue.when(
-                            error: (error, stackTrace) => Center(
-                              child: Text('Error loading tasks: $error'),
-                            ),
-                            loading: () => Center(
-                              child: CircularProgressIndicator(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            data: (tasks) {
-                              final totalTasks = tasks.length;
-                              final completedTasks = tasks
-                                  .where((task) => task.isCompleted)
-                                  .length;
-                              final activeTasks = tasks
-                                  .where((task) => !task.isCompleted)
-                                  .length;
-                              final urgentTasks = tasks
-                                  .where(
-                                    (task) =>
-                                        !task.isCompleted &&
-                                        task.priority == 'high',
-                                  )
-                                  .length;
-                              final completionPercentage = totalTasks > 0
-                                  ? ((completedTasks / totalTasks) * 100)
-                                        .round()
-                                  : 0;
-
-                              return FlowOverviewBlock(
-                                completionPercentage: completionPercentage,
-                                activeTasks: activeTasks,
-                                completedTasks: completedTasks,
-                                urgentTasks: urgentTasks,
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                  20.verticalSpace,
-                  Container(
-                    height: 50.h,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).shadowColor,
-                      borderRadius: BorderRadius.circular(40.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 5.w),
-                      child: Row(
-                        spacing: 1.w,
-                        children: statuses
-                            .map((e) => FlowStatusButton(title: e))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                  20.verticalSpace,
-                  SizedBox(
-                    height: 40.h,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      children: categories
-                          .map((e) => FlowCategoryButton(title: e))
-                          .toList(),
-                    ),
-                  ),
-                  20.verticalSpace,
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final prefsAsync = ref.watch(prefProvider);
-                      return prefsAsync.when(
-                        data: (prefs) {
-                          final isLoggedIn =
-                              prefs.getBool('isLoggedIn') ?? false;
-                          final userEmail = prefs.getString('userEmail') ?? '';
-
-                          if (!isLoggedIn || userEmail.isEmpty) {
-                            return Center(
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.info_outline,
-                                    size: 50.r,
-                                    color: Colors.grey,
-                                  ),
-                                  Text(
-                                    'Please log in to view your tasks',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 18.sp,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          final fetchTasksAsyncValue = ref.watch(
-                            tasksListProvider(userEmail),
-                          );
-
-                          return fetchTasksAsyncValue.when(
-                            data: (tasks) {
-                              final filteredTasks = filterTasks(tasks, ref);
-                              if (filteredTasks.isEmpty) {
-                                return Center(
-                                  child: Text(
-                                    'No tasks yet',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 20.sp,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                );
-                              }
-                              return ListView.separated(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) =>
-                                    FlowTaskItem(task: filteredTasks[index]),
-                                separatorBuilder: (context, index) =>
-                                    10.verticalSpace,
-                                itemCount: filteredTasks.length,
-                              );
-                            },
-                            loading: () => Center(
-                              child: CircularProgressIndicator(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            error: (error, stack) => Center(
-                              child: Text(
-                                'Error loading tasks: $error',
-                                style: GoogleFonts.inter(
-                                  fontSize: 20.sp,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        loading: () => Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        error: (error, stack) => Center(
-                          child: Text(
-                            'Error loading preferences: $error',
-                            style: GoogleFonts.inter(
-                              fontSize: 20.sp,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  20.verticalSpace,
-                ],
-              ),
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: 15.w),
+              children: [
+                30.verticalSpace,
+                const _OverviewSection(),
+                20.verticalSpace,
+                const _StatusFilter(),
+                20.verticalSpace,
+                const _CategoryFilter(),
+                20.verticalSpace,
+                const _TasksList(),
+                20.verticalSpace,
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _HomeHeader extends ConsumerWidget {
+  const _HomeHeader();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FlowHeader(
+      children: [
+        45.verticalSpace,
+        FlowAppBar(
+          actions: [
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return FlowModal(
+                      categorySelectionProvider: _modalCategoryProvider,
+                      prioritySelectionProvider: _modalPriorityProvider,
+                      pickedDateProvider: _modalDateProvider,
+                      titleController: TextEditingController(),
+                      descriptionController: TextEditingController(),
+                    );
+                  },
+                );
+              },
+              style: IconButton.styleFrom(
+                foregroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Colors.white,
+                iconSize: 40.r,
+              ),
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
+        25.verticalSpace,
+        Text(
+          DateTime.now().toString().split(' ')[0],
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17.5.sp),
+        ),
+        Text(
+          'FocusFlow',
+          style: GoogleFonts.inter(
+            fontSize: 35.sp,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OverviewSection extends ConsumerWidget {
+  const _OverviewSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final emailAsync = ref.watch(_currentUserEmailProvider);
+
+    return emailAsync.when(
+      data: (email) {
+        if (email.isEmpty) {
+          return const FlowOverviewBlock(
+            completionPercentage: 0,
+            activeTasks: 0,
+            completedTasks: 0,
+            urgentTasks: 0,
+          );
+        }
+        return ref
+            .watch(tasksListProvider(email))
+            .when(
+              data: (tasks) {
+                final total = tasks.length;
+                final completed = tasks.where((t) => t.isCompleted).length;
+                final active = total - completed;
+                final urgent = tasks
+                    .where((t) => !t.isCompleted && t.priority == 'high')
+                    .length;
+                final percentage = total > 0
+                    ? ((completed / total) * 100).round()
+                    : 0;
+
+                return FlowOverviewBlock(
+                  completionPercentage: percentage,
+                  activeTasks: active,
+                  completedTasks: completed,
+                  urgentTasks: urgent,
+                );
+              },
+              loading: () => Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              error: (e, s) => Center(child: Text('Error: $e')),
+            );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, s) => Center(child: Text('Error: $e')),
+    );
+  }
+}
+
+class _StatusFilter extends StatelessWidget {
+  const _StatusFilter();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50.h,
+      decoration: BoxDecoration(
+        color: Theme.of(context).shadowColor,
+        borderRadius: BorderRadius.circular(40.r),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5.w),
+        child: Row(
+          spacing: 1.w,
+          children: statuses(context).entries.map((entry) {
+            return FlowStatusButton(
+              title: entry.value,
+              value: entry.key.toLowerCase(),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryFilter extends StatelessWidget {
+  const _CategoryFilter();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40.h,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        children: categories.map((e) => FlowCategoryButton(title: e)).toList(),
+      ),
+    );
+  }
+}
+
+class _TasksList extends ConsumerWidget {
+  const _TasksList();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final emailAsync = ref.watch(_currentUserEmailProvider);
+
+    return emailAsync.when(
+      data: (email) {
+        if (email.isEmpty) {
+          return Center(
+            child: Column(
+              children: [
+                Icon(Icons.info_outline, size: 50.r, color: Colors.grey),
+                Text(
+                  AppLocalizations.of(context)!.loginStatment,
+                  style: GoogleFonts.inter(fontSize: 18.sp, color: Colors.grey),
+                ),
+              ],
+            ),
+          );
+        }
+        return ref
+            .watch(tasksListProvider(email))
+            .when(
+              data: (tasks) {
+                final filtered = filterTasks(tasks, ref);
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No tasks yet',
+                      style: GoogleFonts.inter(
+                        fontSize: 20.sp,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  );
+                }
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) =>
+                      FlowTaskItem(task: filtered[index]),
+                  separatorBuilder: (_, __) => 10.verticalSpace,
+                );
+              },
+              loading: () => Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              error: (e, s) => Center(child: Text('Error: $e')),
+            );
+      },
+      loading: () => Center(
+        child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
+      ),
+      error: (e, s) => Center(child: Text('Error: $e')),
     );
   }
 }

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/color_scheme_provider.dart';
+import 'package:frontend/Providers/lang_selection_provider.dart';
+import 'package:frontend/Providers/push_notifications_provider.dart';
 import 'package:frontend/Providers/screen_navigation_provider.dart';
 import 'package:frontend/Services/push_notification_service.dart';
 import 'package:frontend/Widgets/flow_drawer.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -12,31 +15,47 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeNotifications();
-  runApp(ProviderScope(child: MyApp()));
+
+  final prefs = await SharedPreferences.getInstance();
+  final isDark = prefs.getBool('isDarkMode') ?? false;
+  final schemeIndex = prefs.getInt('colorSchemeIndex') ?? 0;
+  final lang = prefs.getString('lang') ?? 'en';
+  final isNotificationOn = prefs.getBool('isNotificationsInitialized') ?? false;
+  final isSoundOn = prefs.getBool('isSoundOn') ?? true;
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        isDarkModeProvider.overrideWith((ref) => isDark),
+        colorSchemeIndexProvider.overrideWith((ref) => schemeIndex),
+        langSelectionProvider.overrideWith((ref) => lang),
+        isNotificationsInitializedProvider.overrideWith(
+          (ref) => isNotificationOn,
+        ),
+        isSoundOnProvider.overrideWith((ref) => isSoundOn),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final prefs = SharedPreferences.getInstance();
-    Future.microtask(() async {
-      await prefs.then((sharedPrefs) {
-        final isDark = sharedPrefs.getBool('isDarkMode') ?? false;
-        ref.read(isDarkModeProvider.notifier).state = isDark;
-      });
-      await prefs.then((sharedPrefs) {
-        final schemeIndex = sharedPrefs.getInt('colorSchemeIndex') ?? 0;
-        ref.read(colorSchemeIndexProvider.notifier).state = schemeIndex;
-      });
-    });
+    final lang = ref.watch(langSelectionProvider);
     final isDark = ref.watch(isDarkModeProvider);
     final schemeIndex = ref.watch(colorSchemeIndexProvider);
+
     return ScreenUtilInit(
-      designSize: Size(447, 875),
+      designSize: const Size(447, 875),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) => MaterialApp(
+        locale: Locale(lang),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         debugShowCheckedModeBanner: false,
         title: 'FocusFlow',
         theme: lightTheme[schemeIndex],
@@ -44,11 +63,11 @@ class MyApp extends ConsumerWidget {
         themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
         home: Scaffold(
           key: scaffoldKey,
-          drawer: FlowDrawer(),
+          drawer: const FlowDrawer(),
           body: Consumer(
             builder: (context, ref, child) {
               final screenIndex = ref.watch(screenNavigationProvider);
-              return screens[screenIndex].screenWidget;
+              return screens(context)[screenIndex].screenWidget;
             },
           ),
         ),

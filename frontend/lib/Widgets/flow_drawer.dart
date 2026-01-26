@@ -6,6 +6,7 @@ import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Screens/login_screen.dart';
 import 'package:frontend/Screens/signup_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class FlowDrawer extends ConsumerWidget {
   const FlowDrawer({super.key});
@@ -93,7 +94,7 @@ class FlowDrawer extends ConsumerWidget {
                             fontSize: 20.sp,
                           ),
                         ),
-                        child: Text('Login'),
+                        child: Text(AppLocalizations.of(context)!.login),
                       ),
                       10.verticalSpace,
                       ElevatedButton(
@@ -116,7 +117,7 @@ class FlowDrawer extends ConsumerWidget {
                             fontSize: 20.sp,
                           ),
                         ),
-                        child: Text('Sign Up'),
+                        child: Text(AppLocalizations.of(context)!.signUp),
                       ),
                     ],
                   ),
@@ -124,10 +125,10 @@ class FlowDrawer extends ConsumerWidget {
           ListView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
-            itemCount: screens.length,
+            itemCount: screens(context).length,
             itemBuilder: (context, index) => FlowDrawerItem(
-              title: screens[index].screenName,
-              icon: screens[index].screenIcon,
+              title: screens(context)[index].screenName,
+              icon: screens(context)[index].screenIcon,
               isSelected: screenSelection == index,
               onTap: () {
                 ref.read(screenNavigationProvider.notifier).state = index;
@@ -150,7 +151,7 @@ class FlowDrawer extends ConsumerWidget {
                       color: Colors.white,
                     ),
                     title: Text(
-                      'Logout',
+                      AppLocalizations.of(context)!.logout,
                       style: GoogleFonts.inter(
                         fontSize: 20.sp,
                         color: Colors.white,
