@@ -5,16 +5,11 @@ import 'package:frontend/Providers/screen_navigation_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SplashScreen extends ConsumerStatefulWidget {
+class SplashScreen extends ConsumerWidget {
   const SplashScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends ConsumerState<SplashScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(userProvider, (previous, next) {
       next.when(
         data: (_) {
@@ -34,37 +29,39 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       );
     });
 
-    return Center(
-      child: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor,
-              Theme.of(context).primaryColorLight,
-            ],
-            stops: const [0, 0.5, 1],
-            begin: Alignment.centerLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'FocusFlow',
-              style: GoogleFonts.inter(
-                fontSize: 50.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+    return Scaffold(
+      body: Center(
+        child: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColorLight,
+              ],
+              stops: const [0, 0.5, 1],
+              begin: Alignment.centerLeft,
+              end: Alignment.bottomRight,
             ),
-            30.verticalSpace,
-            const CircularProgressIndicator(color: Colors.white),
-          ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'FocusFlow',
+                style: GoogleFonts.inter(
+                  fontSize: 50.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              30.verticalSpace,
+              const CircularProgressIndicator(color: Colors.white),
+            ],
+          ),
         ),
       ),
     );

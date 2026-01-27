@@ -7,6 +7,7 @@ import 'package:frontend/Providers/push_notifications_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_app_bar.dart';
 import 'package:frontend/Widgets/flow_change_password_model.dart';
+import 'package:frontend/Widgets/flow_confirm_delete_modal.dart';
 import 'package:frontend/Widgets/flow_drawer.dart';
 import 'package:frontend/Widgets/flow_edit_profile_modal.dart';
 import 'package:frontend/Widgets/flow_gradient_button.dart';
@@ -252,6 +253,27 @@ class _AccountSection extends ConsumerWidget {
               ),
             ),
             10.verticalSpace,
+            ListTile(
+              onTap: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) => const FlowConfirmDeleteModal(),
+                );
+              },
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(
+                Icons.delete_outline,
+                size: 40,
+                color: Theme.of(context).primaryColor,
+              ),
+              title: Text(
+                'Delete Account',
+                style: GoogleFonts.inter(
+                  fontSize: 20.r,
+                  color: Theme.of(context).hintColor,
+                ),
+              ),
+            ),
           ],
         ),
       ],
