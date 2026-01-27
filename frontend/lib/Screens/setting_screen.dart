@@ -267,7 +267,7 @@ class _AccountSection extends ConsumerWidget {
                 color: Theme.of(context).primaryColor,
               ),
               title: Text(
-                'Delete Account',
+                AppLocalizations.of(context)!.deleteAccount,
                 style: GoogleFonts.inter(
                   fontSize: 20.r,
                   color: Theme.of(context).hintColor,

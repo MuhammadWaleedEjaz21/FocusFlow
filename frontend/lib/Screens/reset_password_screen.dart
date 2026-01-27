@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_auth_button.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
@@ -58,7 +59,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               ),
               20.verticalSpace,
               Text(
-                'Reset Password',
+                AppLocalizations.of(context)!.resetPassword,
                 style: GoogleFonts.inter(
                   fontSize: 30.sp,
                   fontWeight: FontWeight.bold,
@@ -67,7 +68,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               ),
               5.verticalSpace,
               Text(
-                'Enter your new password',
+                AppLocalizations.of(context)!.resetPasswordDescription,
                 style: GoogleFonts.inter(
                   fontSize: 17.5.sp,
                   color: Colors.blueGrey.shade600,
@@ -93,7 +94,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   child: Column(
                     children: [
                       FlowFormField(
-                        labelText: 'New Password',
+                        labelText: AppLocalizations.of(context)!.newPassword,
                         hintText: '********',
                         controller: _passwordController,
                         isPassword: true,
@@ -119,7 +120,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                   );
                                 }
                               },
-                              text: 'Reset Password',
+                              text: AppLocalizations.of(context)!.resetPassword,
                             ),
                           ),
                         ],

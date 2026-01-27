@@ -36,14 +36,10 @@
     "appearance": "Appearance",
     "appSettings": "App Settings",
     "newTask": "New Task",
-    "taskTitle": " Title",
-    "@taskTitle": {
-        "description": "Enter Task Title"
-    },
+    "taskTitle": "Title",
+    "taskTitleDetails": "Enter Task Title",
     "description": "Description",
-    "@description": {
-        "description": "Enter Task Description"
-    },
+    "descriptiondetails": "Enter Task Description",
     "category": "Category",
     "priority": "Priority",
     "dueDate": "Due Date",
@@ -61,5 +57,16 @@
     "newPassworddescription": "Enter New Password",
     "confirmNewPassword": "Confirm New Password",
     "confirmNewPassworddescription": "Enter Confirm New Password",
-    "updateTask": "Update Task"
+    "updateTask": "Update Task",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDescription": "Are you sure you want to delete your account?",
+    "delete": "Delete",
+    "update": "Update",
+    "forgotPasswordDescription": "Enter your email to receive a verification code.",
+    "rememberYourPassword": "Remember your password?",
+    "sendVerificationCode": "Send Verification Code",
+    "enterVerificationCode": "Enter Verification Code",
+    "enterVerificationCodeDescription": "Enter the verification code sent to your email.",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your new password."
 }

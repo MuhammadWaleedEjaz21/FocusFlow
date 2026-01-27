@@ -45,7 +45,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get enabled => 'Etkin';
 
   @override
-  String get colorScheme => 'Renk Düzeni';
+  String get colorScheme => 'Renk Şeması';
 
   @override
   String get notification => 'Bildirimler';
@@ -120,7 +120,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get taskTitle => 'Başlık';
 
   @override
+  String get taskTitleDetails => 'Görev başlığını gir';
+
+  @override
   String get description => 'Açıklama';
+
+  @override
+  String get descriptiondetails => 'Görev açıklamasını gir';
 
   @override
   String get category => 'Kategori';
@@ -144,26 +150,62 @@ class AppLocalizationsTr extends AppLocalizations {
   String get newName => 'Yeni İsim';
 
   @override
-  String get newNamedescription => 'Yeni ismi girin';
+  String get newNamedescription => 'Yeni ismi gir';
 
   @override
   String get oldPassword => 'Eski Şifre';
 
   @override
-  String get oldPassworddescription => 'Eski şifreyi girin';
+  String get oldPassworddescription => 'Eski şifreyi gir';
 
   @override
   String get newPassword => 'Yeni Şifre';
 
   @override
-  String get newPassworddescription => 'Yeni şifreyi girin';
+  String get newPassworddescription => 'Yeni şifreyi gir';
 
   @override
   String get confirmNewPassword => 'Yeni Şifreyi Onayla';
 
   @override
-  String get confirmNewPassworddescription => 'Yeni şifre onayını girin';
+  String get confirmNewPassworddescription => 'Yeni şifre onayını gir';
 
   @override
   String get updateTask => 'Görevi Güncelle';
+
+  @override
+  String get deleteAccount => 'Hesabı Sil';
+
+  @override
+  String get deleteAccountDescription =>
+      'Hesabını silmek istediğine emin misin?';
+
+  @override
+  String get delete => 'Sil';
+
+  @override
+  String get update => 'Güncelle';
+
+  @override
+  String get forgotPasswordDescription =>
+      'Doğrulama kodu almak için e-postanı gir.';
+
+  @override
+  String get rememberYourPassword => 'Şifreni hatırlıyor musun?';
+
+  @override
+  String get sendVerificationCode => 'Doğrulama Kodu Gönder';
+
+  @override
+  String get enterVerificationCode => 'Doğrulama Kodunu Gir';
+
+  @override
+  String get enterVerificationCodeDescription =>
+      'E-postana gönderilen doğrulama kodunu gir.';
+
+  @override
+  String get resetPassword => 'Şifreyi Sıfırla';
+
+  @override
+  String get resetPasswordDescription => 'Yeni şifreni gir.';
 }

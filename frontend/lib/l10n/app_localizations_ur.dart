@@ -27,13 +27,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get login => 'لاگ ان';
 
   @override
-  String get signUp => 'رجسٹر کریں';
+  String get signUp => 'سائن اپ';
 
   @override
   String get home => 'ہوم';
 
   @override
-  String get settings => 'ترتیبات';
+  String get settings => 'سیٹنگز';
 
   @override
   String get darkMode => 'ڈارک تھیم';
@@ -45,7 +45,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get enabled => 'فعال';
 
   @override
-  String get colorScheme => 'رنگوں کی ترتیب';
+  String get colorScheme => 'رنگوں کا انداز';
 
   @override
   String get notification => 'اطلاعات';
@@ -54,13 +54,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get sound => 'آواز';
 
   @override
-  String get playSound => 'اطلاع کی آواز چلائیں';
+  String get playSound => 'اطلاعی آواز چلائیں';
 
   @override
   String get account => 'اکاؤنٹ';
 
   @override
-  String get profile => 'پروفائل میں ترمیم کریں';
+  String get profile => 'پروفائل میں ترمیم';
 
   @override
   String get logout => 'لاگ آؤٹ';
@@ -78,7 +78,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get password => 'پاس ورڈ';
 
   @override
-  String get confirmPassword => 'پاس ورڈ کی تصدیق کریں';
+  String get confirmPassword => 'پاس ورڈ کی تصدیق';
 
   @override
   String get fullName => 'پورا نام';
@@ -90,13 +90,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get dontHaveAccount => 'اکاؤنٹ نہیں ہے؟';
 
   @override
-  String get haveAccount => 'پہلے سے اکاؤنٹ ہے؟';
+  String get haveAccount => 'پہلے سے اکاؤنٹ موجود ہے؟';
 
   @override
   String get createAccount => 'اکاؤنٹ بنائیں';
 
   @override
-  String get signUpStatment => 'شروع کرنے کے لیے رجسٹر کریں';
+  String get signUpStatment => 'شروع کرنے کے لیے سائن اپ کریں';
 
   @override
   String get loginStatment => 'اپنے اکاؤنٹ میں لاگ ان کریں';
@@ -105,22 +105,28 @@ class AppLocalizationsUr extends AppLocalizations {
   String get pushNotification => 'پش نوٹیفکیشن';
 
   @override
-  String get pushNotificationDescription => 'پش نوٹیفکیشن حاصل کریں';
+  String get pushNotificationDescription => 'پش اطلاعات وصول کریں';
 
   @override
   String get appearance => 'ظاہری شکل';
 
   @override
-  String get appSettings => 'ایپ کی ترتیبات';
+  String get appSettings => 'ایپ سیٹنگز';
 
   @override
-  String get newTask => 'نیا ٹاسک';
+  String get newTask => 'نیا کام';
 
   @override
   String get taskTitle => 'عنوان';
 
   @override
+  String get taskTitleDetails => 'کام کا عنوان درج کریں';
+
+  @override
   String get description => 'تفصیل';
+
+  @override
+  String get descriptiondetails => 'کام کی تفصیل درج کریں';
 
   @override
   String get category => 'زمرہ';
@@ -159,11 +165,47 @@ class AppLocalizationsUr extends AppLocalizations {
   String get newPassworddescription => 'نیا پاس ورڈ درج کریں';
 
   @override
-  String get confirmNewPassword => 'نئے پاس ورڈ کی تصدیق کریں';
+  String get confirmNewPassword => 'نئے پاس ورڈ کی تصدیق';
 
   @override
   String get confirmNewPassworddescription => 'نئے پاس ورڈ کی تصدیق درج کریں';
 
   @override
-  String get updateTask => 'ٹاسک اپڈیٹ کریں';
+  String get updateTask => 'کام اپڈیٹ کریں';
+
+  @override
+  String get deleteAccount => 'اکاؤنٹ حذف کریں';
+
+  @override
+  String get deleteAccountDescription =>
+      'کیا آپ واقعی اپنا اکاؤنٹ حذف کرنا چاہتے ہیں؟';
+
+  @override
+  String get delete => 'حذف کریں';
+
+  @override
+  String get update => 'اپڈیٹ کریں';
+
+  @override
+  String get forgotPasswordDescription =>
+      'تصدیقی کوڈ حاصل کرنے کے لیے اپنی ای میل درج کریں۔';
+
+  @override
+  String get rememberYourPassword => 'پاس ورڈ یاد ہے؟';
+
+  @override
+  String get sendVerificationCode => 'تصدیقی کوڈ بھیجیں';
+
+  @override
+  String get enterVerificationCode => 'تصدیقی کوڈ درج کریں';
+
+  @override
+  String get enterVerificationCodeDescription =>
+      'ای میل پر بھیجا گیا تصدیقی کوڈ درج کریں۔';
+
+  @override
+  String get resetPassword => 'پاس ورڈ ری سیٹ کریں';
+
+  @override
+  String get resetPasswordDescription => 'نیا پاس ورڈ درج کریں۔';
 }

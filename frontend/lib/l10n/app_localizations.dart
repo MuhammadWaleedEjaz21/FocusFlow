@@ -318,17 +318,29 @@ abstract class AppLocalizations {
   /// **'New Task'**
   String get newTask;
 
-  /// Enter Task Title
+  /// No description provided for @taskTitle.
   ///
   /// In en, this message translates to:
-  /// **' Title'**
+  /// **'Title'**
   String get taskTitle;
 
-  /// Enter Task Description
+  /// No description provided for @taskTitleDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Task Title'**
+  String get taskTitleDetails;
+
+  /// No description provided for @description.
   ///
   /// In en, this message translates to:
   /// **'Description'**
   String get description;
+
+  /// No description provided for @descriptiondetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Task Description'**
+  String get descriptiondetails;
 
   /// No description provided for @category.
   ///
@@ -419,6 +431,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update Task'**
   String get updateTask;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account?'**
+  String get deleteAccountDescription;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @forgotPasswordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to receive a verification code.'**
+  String get forgotPasswordDescription;
+
+  /// No description provided for @rememberYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember your password?'**
+  String get rememberYourPassword;
+
+  /// No description provided for @sendVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Verification Code'**
+  String get sendVerificationCode;
+
+  /// No description provided for @enterVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Verification Code'**
+  String get enterVerificationCode;
+
+  /// No description provided for @enterVerificationCodeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the verification code sent to your email.'**
+  String get enterVerificationCodeDescription;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
+
+  /// No description provided for @resetPasswordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password.'**
+  String get resetPasswordDescription;
 }
 
 class _AppLocalizationsDelegate

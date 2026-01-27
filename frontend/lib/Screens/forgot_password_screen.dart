@@ -59,7 +59,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ),
               20.verticalSpace,
               Text(
-                'Forgot Password',
+                AppLocalizations.of(context)!.forgotPassword,
                 style: GoogleFonts.inter(
                   fontSize: 30.sp,
                   fontWeight: FontWeight.bold,
@@ -68,7 +68,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ),
               5.verticalSpace,
               Text(
-                'Enter your email to receive a verification code',
+                AppLocalizations.of(context)!.forgotPasswordDescription,
                 style: GoogleFonts.inter(
                   fontSize: 17.5.sp,
                   color: Colors.blueGrey.shade600,
@@ -94,7 +94,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   child: Column(
                     children: [
                       FlowFormField(
-                        labelText: 'Email',
+                        labelText: AppLocalizations.of(context)!.email,
                         hintText: 'you@example.com',
                         controller: _emailController,
                       ),
@@ -122,7 +122,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                   );
                                 }
                               },
-                              text: 'Send Verification Code',
+                              text: AppLocalizations.of(
+                                context,
+                              )!.sendVerificationCode,
                             ),
                           ),
                         ],
@@ -132,7 +134,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Remember your password?',
+                            AppLocalizations.of(context)!.rememberYourPassword,
                             style: GoogleFonts.inter(
                               color: Theme.of(context).hintColor,
                               fontSize: 20.sp,

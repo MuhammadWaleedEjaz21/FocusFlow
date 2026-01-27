@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Screens/reset_password_screen.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               ),
               20.verticalSpace,
               Text(
-                'Enter the verification code',
+                AppLocalizations.of(context)!.enterVerificationCode,
                 style: GoogleFonts.inter(
                   fontSize: 30.sp,
                   fontWeight: FontWeight.bold,
@@ -52,7 +53,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               ),
               5.verticalSpace,
               Text(
-                'Enter the verification code sent to your email',
+                AppLocalizations.of(context)!.enterVerificationCodeDescription,
                 style: GoogleFonts.inter(
                   fontSize: 17.5.sp,
                   color: Colors.blueGrey.shade600,

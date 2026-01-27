@@ -117,10 +117,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newTask => 'New Task';
 
   @override
-  String get taskTitle => ' Title';
+  String get taskTitle => 'Title';
+
+  @override
+  String get taskTitleDetails => 'Enter Task Title';
 
   @override
   String get description => 'Description';
+
+  @override
+  String get descriptiondetails => 'Enter Task Description';
 
   @override
   String get category => 'Category';
@@ -166,4 +172,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateTask => 'Update Task';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountDescription =>
+      'Are you sure you want to delete your account?';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get forgotPasswordDescription =>
+      'Enter your email to receive a verification code.';
+
+  @override
+  String get rememberYourPassword => 'Remember your password?';
+
+  @override
+  String get sendVerificationCode => 'Send Verification Code';
+
+  @override
+  String get enterVerificationCode => 'Enter Verification Code';
+
+  @override
+  String get enterVerificationCodeDescription =>
+      'Enter the verification code sent to your email.';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get resetPasswordDescription => 'Enter your new password.';
 }

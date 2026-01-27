@@ -96,16 +96,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get createAccount => 'إنشاء حساب';
 
   @override
-  String get signUpStatment => 'أنشئ حسابك للبدء';
+  String get signUpStatment => 'سجل للبدء';
 
   @override
-  String get loginStatment => 'سجّل الدخول إلى حسابك';
+  String get loginStatment => 'تسجيل الدخول إلى حسابك';
 
   @override
-  String get pushNotification => 'إشعارات فورية';
+  String get pushNotification => 'إشعارات الدفع';
 
   @override
-  String get pushNotificationDescription => 'استلام الإشعارات الفورية';
+  String get pushNotificationDescription => 'استلام إشعارات الدفع';
 
   @override
   String get appearance => 'المظهر';
@@ -120,7 +120,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get taskTitle => 'العنوان';
 
   @override
+  String get taskTitleDetails => 'أدخل عنوان المهمة';
+
+  @override
   String get description => 'الوصف';
+
+  @override
+  String get descriptiondetails => 'أدخل وصف المهمة';
 
   @override
   String get category => 'الفئة';
@@ -166,4 +172,39 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get updateTask => 'تحديث المهمة';
+
+  @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get deleteAccountDescription => 'هل أنت متأكد أنك تريد حذف حسابك؟';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get update => 'تحديث';
+
+  @override
+  String get forgotPasswordDescription =>
+      'أدخل بريدك الإلكتروني لاستلام رمز التحقق.';
+
+  @override
+  String get rememberYourPassword => 'تتذكر كلمة المرور؟';
+
+  @override
+  String get sendVerificationCode => 'إرسال رمز التحقق';
+
+  @override
+  String get enterVerificationCode => 'إدخال رمز التحقق';
+
+  @override
+  String get enterVerificationCodeDescription =>
+      'أدخل رمز التحقق المرسل إلى بريدك الإلكتروني.';
+
+  @override
+  String get resetPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get resetPasswordDescription => 'أدخل كلمة المرور الجديدة.';
 }

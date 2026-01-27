@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_auth_button.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlowConfirmDeleteModal extends ConsumerWidget {
@@ -18,7 +19,7 @@ class FlowConfirmDeleteModal extends ConsumerWidget {
           physics: NeverScrollableScrollPhysics(),
           children: [
             Text(
-              'Delete Account',
+              AppLocalizations.of(context)!.deleteAccount,
               style: GoogleFonts.inter(
                 fontSize: 20.r,
                 color: Theme.of(context).hintColor,
@@ -26,7 +27,7 @@ class FlowConfirmDeleteModal extends ConsumerWidget {
             ),
             20.verticalSpace,
             Text(
-              'Are you sure you want to delete your account?',
+              AppLocalizations.of(context)!.deleteAccountDescription,
               style: GoogleFonts.inter(
                 fontSize: 20.r,
                 color: Theme.of(context).hintColor,
@@ -50,7 +51,7 @@ class FlowConfirmDeleteModal extends ConsumerWidget {
                   ).showSnackBar(SnackBar(content: Text(e.toString())));
                 }
               },
-              text: 'Delete',
+              text: AppLocalizations.of(context)!.delete,
             ),
           ],
         ),
