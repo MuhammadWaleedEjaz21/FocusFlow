@@ -3,7 +3,8 @@ import 'package:frontend/Models/user_model.dart';
 import 'package:http/http.dart' as http;
 
 class UserService {
-  final String baseUrl = 'http://10.0.2.2:3000/MyTasks/users';
+  final String baseUrl =
+      'https://focusflow-production-dc7a.up.railway.app/MyTasks/users';
 
   Future<UserModel> fetchUserData(String email, String token) async {
     final url = Uri.parse('$baseUrl/$email');

@@ -3,7 +3,8 @@ import 'package:frontend/Models/task_model.dart';
 import 'package:http/http.dart' as http;
 
 class TaskService {
-  final String baseURL = 'http://10.0.2.2:3000/MyTasks/tasks';
+  final String baseURL =
+      'https://focusflow-production-dc7a.up.railway.app/MyTasks/tasks';
 
   Future<List<TaskModel>> fetchTasks(String userEmail, String token) async {
     final url = Uri.parse('$baseURL/$userEmail');
