@@ -14,6 +14,12 @@ Future<void> localDBInitialize() async {
     await Hive.deleteBoxFromDisk('favouriteBox');
     await Hive.openBox('favouriteBox');
   }
+  try {
+    await Hive.openBox<String>('pendingDeletionsBox');
+  } catch (e) {
+    await Hive.deleteBoxFromDisk('pendingDeletionsBox');
+    await Hive.openBox<String>('pendingDeletionsBox');
+  }
 }
 
 class LocaldbService {
@@ -22,7 +28,6 @@ class LocaldbService {
   Future<void> addtoFavourites(TaskModel task) async {
     final box = Hive.box('favouriteBox');
 
-    // Add to local DB
     await box.put(
       task.uniqueId,
       LocalDB()
@@ -91,6 +96,36 @@ class LocaldbService {
 
   Future<void> syncFavourites() async {
     final box = Hive.box('favouriteBox');
+    final pendingDeletionsBox = Hive.box<String>('pendingDeletionsBox');
+    final currentUserEmail = await ref
+        .read(prefProvider.future)
+        .then((prefs) => prefs.getString('userEmail') ?? '');
+    final taskList = await ref.read(tasksListProvider(currentUserEmail).future);
+
+    final pendingDeletions = pendingDeletionsBox.values.toList();
+    for (var uniqueId in pendingDeletions) {
+      final existsOnServer = taskList.any((t) => t.uniqueId == uniqueId);
+      if (existsOnServer) {
+        print("↑ Syncing offline deletion to server: $uniqueId");
+        try {
+          final taskToDelete = taskList.firstWhere(
+            (t) => t.uniqueId == uniqueId,
+          );
+          await ref
+              .read(taskProvider.future)
+              .then((controller) => controller.deleteTask(taskToDelete));
+        } catch (e) {
+          print("✗ Error deleting task on server: $e");
+        }
+      }
+    }
+    await pendingDeletionsBox.clear();
+    print("✓ Cleared pending deletions");
+
+    final updatedTaskList = await ref.refresh(
+      tasksListProvider(currentUserEmail).future,
+    );
+
     final favourites = box.values
         .cast<LocalDB>()
         .map(
@@ -107,22 +142,16 @@ class LocaldbService {
           ),
         )
         .toList();
-    final currentUserEmail = await ref
-        .read(prefProvider.future)
-        .then((prefs) => prefs.getString('userEmail') ?? '');
-    final taskList = await ref.read(tasksListProvider(currentUserEmail).future);
+
     for (var favTask in favourites) {
-      final existsOnServer = taskList.any(
+      final existsOnServer = updatedTaskList.any(
         (t) => t.uniqueId == favTask.uniqueId,
       );
-
       if (!existsOnServer) {
-        print("↑ Syncing new offline task to server: ${favTask.title}");
-        await ref
-            .read(taskProvider.future)
-            .then((controller) => controller.addTask(favTask));
+        print("↓ Removing task deleted from server: ${favTask.title}");
+        await box.delete(favTask.uniqueId);
       } else {
-        final serverTask = taskList.firstWhere(
+        final serverTask = updatedTaskList.firstWhere(
           (t) => t.uniqueId == favTask.uniqueId,
         );
         if (serverTask.isFavorite == false) {
@@ -143,6 +172,38 @@ class LocaldbService {
                 ),
               );
         }
+      }
+    }
+
+    final currentFavourites = box.values
+        .cast<LocalDB>()
+        .map(
+          (localDB) => TaskModel(
+            userEmail: localDB.userEmail,
+            uniqueId: localDB.uniqueId,
+            title: localDB.title,
+            description: localDB.description,
+            category: localDB.category,
+            priority: localDB.priority,
+            dueDate: localDB.dueDate,
+            isCompleted: localDB.isCompleted,
+            isFavorite: localDB.isFavorite,
+          ),
+        )
+        .toList();
+
+    final refreshedTaskList = await ref.refresh(
+      tasksListProvider(currentUserEmail).future,
+    );
+    for (var favTask in currentFavourites) {
+      final existsOnServer = refreshedTaskList.any(
+        (t) => t.uniqueId == favTask.uniqueId,
+      );
+      if (!existsOnServer) {
+        print("↑ Syncing new offline task to server: ${favTask.title}");
+        await ref
+            .read(taskProvider.future)
+            .then((controller) => controller.addTask(favTask));
       }
     }
   }
@@ -168,9 +229,12 @@ class LocaldbService {
 
   Future<void> removeLocalTask(String uniqueId) async {
     final box = Hive.box('favouriteBox');
-
     await box.delete(uniqueId);
     print("✓ Removed local task from local DB");
+
+    final pendingDeletionsBox = Hive.box<String>('pendingDeletionsBox');
+    await pendingDeletionsBox.add(uniqueId);
+    print("✓ Added to pending deletions for server sync");
   }
 
   Future<void> updateLocalTask(TaskModel task) async {
@@ -200,6 +264,12 @@ class LocaldbService {
       await box.clear();
       print("✓ Cleared local DB");
     }
+
+    final pendingDeletionsBox = Hive.box<String>('pendingDeletionsBox');
+    if (pendingDeletionsBox.isNotEmpty) {
+      await pendingDeletionsBox.clear();
+      print("✓ Cleared pending deletions");
+    }
   }
 
   Future<void> closeDB() async {
@@ -208,6 +278,7 @@ class LocaldbService {
 
   Future<void> deleteDB() async {
     await Hive.deleteBoxFromDisk('favouriteBox');
+    await Hive.deleteBoxFromDisk('pendingDeletionsBox');
     print("✓ Deleted local DB from disk");
   }
 
