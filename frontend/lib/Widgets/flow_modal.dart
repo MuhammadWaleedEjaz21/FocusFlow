@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Models/task_model.dart';
 import 'package:frontend/Providers/catergory_selection_provider.dart';
+import 'package:frontend/Providers/connectivity_provider.dart';
+import 'package:frontend/Providers/localdb_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
@@ -255,6 +257,7 @@ class FlowModal extends StatelessWidget {
                   Expanded(
                     child: Consumer(
                       builder: (context, ref, child) {
+                        final isOnline = ref.watch(isOnlineProvider);
                         final categorySelection = ref.watch(
                           categorySelectionProvider,
                         );
@@ -282,9 +285,27 @@ class FlowModal extends StatelessWidget {
                                 taskRepo,
                               ) async {
                                 if (toUpdate) {
-                                  await taskRepo.updateTask(newTask);
+                                  if (isOnline) {
+                                    await taskRepo.updateTask(newTask);
+                                  } else {
+                                    await ref.read(localDBProvider.future).then(
+                                      (localDBRepo) async {
+                                        await localDBRepo.updateLocalTask(
+                                          newTask,
+                                        );
+                                      },
+                                    );
+                                  }
                                 } else {
-                                  await taskRepo.addTask(newTask);
+                                  if (isOnline) {
+                                    await taskRepo.addTask(newTask);
+                                  } else {
+                                    await ref.read(localDBProvider.future).then(
+                                      (localDBRepo) async {
+                                        await localDBRepo.addLocalTask(newTask);
+                                      },
+                                    );
+                                  }
                                 }
                                 Navigator.of(context).pop();
                               });

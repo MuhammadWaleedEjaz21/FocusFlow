@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend/Providers/connectivity_provider.dart';
 import 'package:frontend/Providers/screen_navigation_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Screens/login_screen.dart';
@@ -30,6 +31,7 @@ class FlowDrawer extends ConsumerWidget {
       data: (user) => user,
       orElse: () => null,
     );
+    final isOnline = ref.watch(isOnlineProvider);
     return Drawer(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
@@ -48,78 +50,91 @@ class FlowDrawer extends ConsumerWidget {
                 stops: [0, 0.5, 1],
               ),
             ),
-            child: isLoggedIn
-                ? Column(
-                    children: [
-                      Icon(
-                        Icons.person_outline,
-                        size: 80.r,
-                        color: Colors.white,
-                      ),
-                      if (userAsync.isLoading)
-                        const CircularProgressIndicator(color: Colors.white)
-                      else
-                        Flexible(
-                          child: Text(
-                            userData?.fullName ?? 'Guest',
-                            style: GoogleFonts.inter(
+            child: isOnline
+                ? isLoggedIn
+                      ? Column(
+                          children: [
+                            Icon(
+                              Icons.person_outline,
+                              size: 80.r,
                               color: Colors.white,
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.bold,
                             ),
-                          ),
-                        ),
-                    ],
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => LoginScreen(),
+                            if (userAsync.isLoading)
+                              const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            else
+                              Flexible(
+                                child: Text(
+                                  userData?.fullName ?? 'Guest',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 30.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginScreen(),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                fixedSize: Size(150.w, 50.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                backgroundColor: Colors.white,
+                                foregroundColor: Theme.of(context).primaryColor,
+                                textStyle: GoogleFonts.inter(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.sp,
+                                ),
+                              ),
+                              child: Text(AppLocalizations.of(context)!.login),
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: Size(150.w, 50.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Theme.of(context).primaryColor,
-                          textStyle: GoogleFonts.inter(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.sp,
-                          ),
-                        ),
-                        child: Text(AppLocalizations.of(context)!.login),
+                            10.verticalSpace,
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignupScreen(),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                fixedSize: Size(150.w, 50.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                backgroundColor: Colors.white,
+                                foregroundColor: Theme.of(context).primaryColor,
+                                textStyle: GoogleFonts.inter(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.sp,
+                                ),
+                              ),
+                              child: Text(AppLocalizations.of(context)!.signUp),
+                            ),
+                          ],
+                        )
+                : Center(
+                    child: Text(
+                      'No Internet Connection',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
                       ),
-                      10.verticalSpace,
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const SignupScreen(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: Size(150.w, 50.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Theme.of(context).primaryColor,
-                          textStyle: GoogleFonts.inter(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.sp,
-                          ),
-                        ),
-                        child: Text(AppLocalizations.of(context)!.signUp),
-                      ),
-                    ],
+                    ),
                   ),
           ),
           ListView.builder(

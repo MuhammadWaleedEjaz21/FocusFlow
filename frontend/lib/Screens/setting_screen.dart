@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/color_scheme_provider.dart';
+import 'package:frontend/Providers/connectivity_provider.dart';
 import 'package:frontend/Providers/lang_selection_provider.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
@@ -192,7 +193,10 @@ class _AccountSection extends ConsumerWidget {
           data: (prefs) => prefs.getBool('isLoggedIn') ?? false,
           orElse: () => false,
         );
-
+    final isOnline = ref.watch(isOnlineProvider);
+    if (!isOnline) {
+      return SizedBox.shrink();
+    }
     if (!isLoggedIn) return const SizedBox.shrink();
 
     return Column(
@@ -233,6 +237,7 @@ class _AccountSection extends ConsumerWidget {
             10.verticalSpace,
             ListTile(
               onTap: () {
+                
                 showDialog(
                   context: context,
                   builder: (_) => const FlowChangePasswordModal(),

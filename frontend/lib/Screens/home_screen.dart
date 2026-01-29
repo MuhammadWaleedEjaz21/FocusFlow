@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/catergory_selection_provider.dart';
+import 'package:frontend/Providers/connectivity_provider.dart';
+import 'package:frontend/Providers/localdb_provider.dart';
 import 'package:frontend/Providers/status_selection_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
@@ -22,19 +24,12 @@ final _modalCategoryProvider = StateProvider.autoDispose<String>((ref) => '');
 final _modalPriorityProvider = StateProvider.autoDispose<String>((ref) => '');
 final _modalDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
 
-final _currentUserEmailProvider = FutureProvider.autoDispose<String>((
-  ref,
-) async {
-  final prefs = await ref.watch(prefProvider.future);
-  if (prefs.getBool('isLoggedIn') != true) return '';
-  return prefs.getString('userEmail') ?? '';
-});
-
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isOnline = ref.watch(isOnlineProvider);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: const FlowDrawer(),
@@ -47,13 +42,15 @@ class HomeScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 15.w),
               children: [
                 30.verticalSpace,
-                const _OverviewSection(),
+                isOnline
+                    ? const _OverviewSection()
+                    : const _OverviewSectionOffline(),
                 20.verticalSpace,
                 const _StatusFilter(),
                 20.verticalSpace,
                 const _CategoryFilter(),
                 20.verticalSpace,
-                const _TasksList(),
+                if (isOnline) const _TasksList() else const _TaskListOffline(),
                 20.verticalSpace,
               ],
             ),
@@ -121,11 +118,61 @@ class _OverviewSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final emailAsync = ref.watch(_currentUserEmailProvider);
+    final userEmail = ref
+        .watch(prefProvider)
+        .maybeWhen(
+          data: (prefs) => prefs.getString('userEmail') ?? '',
+          orElse: () => '',
+        );
 
-    return emailAsync.when(
-      data: (email) {
-        if (email.isEmpty) {
+    if (userEmail.isEmpty) {
+      return const FlowOverviewBlock(
+        completionPercentage: 0,
+        activeTasks: 0,
+        completedTasks: 0,
+        urgentTasks: 0,
+      );
+    }
+    return ref
+        .watch(tasksListProvider(userEmail))
+        .when(
+          data: (tasks) {
+            final total = tasks.length;
+            final completed = tasks.where((t) => t.isCompleted).length;
+            final active = total - completed;
+            final urgent = tasks
+                .where((t) => !t.isCompleted && t.priority == 'high')
+                .length;
+            final percentage = total > 0
+                ? ((completed / total) * 100).round()
+                : 0;
+
+            return FlowOverviewBlock(
+              completionPercentage: percentage,
+              activeTasks: active,
+              completedTasks: completed,
+              urgentTasks: urgent,
+            );
+          },
+          loading: () => Center(
+            child: CircularProgressIndicator(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          error: (e, s) => Center(child: Text('Error: $e')),
+        );
+  }
+}
+
+class _OverviewSectionOffline extends ConsumerWidget {
+  const _OverviewSectionOffline();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasks = ref.watch(fetchlocalDB);
+    return tasks.when(
+      data: (tasks) {
+        if (tasks.isEmpty) {
           return const FlowOverviewBlock(
             completionPercentage: 0,
             activeTasks: 0,
@@ -133,36 +180,24 @@ class _OverviewSection extends ConsumerWidget {
             urgentTasks: 0,
           );
         }
-        return ref
-            .watch(tasksListProvider(email))
-            .when(
-              data: (tasks) {
-                final total = tasks.length;
-                final completed = tasks.where((t) => t.isCompleted).length;
-                final active = total - completed;
-                final urgent = tasks
-                    .where((t) => !t.isCompleted && t.priority == 'high')
-                    .length;
-                final percentage = total > 0
-                    ? ((completed / total) * 100).round()
-                    : 0;
+        final total = tasks.length;
+        final completed = tasks.where((t) => t.isCompleted).length;
+        final active = total - completed;
+        final urgent = tasks
+            .where((t) => !t.isCompleted && t.priority == 'high')
+            .length;
+        final percentage = total > 0 ? ((completed / total) * 100).round() : 0;
 
-                return FlowOverviewBlock(
-                  completionPercentage: percentage,
-                  activeTasks: active,
-                  completedTasks: completed,
-                  urgentTasks: urgent,
-                );
-              },
-              loading: () => Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              error: (e, s) => Center(child: Text('Error: $e')),
-            );
+        return FlowOverviewBlock(
+          completionPercentage: percentage,
+          activeTasks: active,
+          completedTasks: completed,
+          urgentTasks: urgent,
+        );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Center(
+        child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
+      ),
       error: (e, s) => Center(child: Text('Error: $e')),
     );
   }
@@ -216,55 +251,80 @@ class _TasksList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final emailAsync = ref.watch(_currentUserEmailProvider);
-
-    return emailAsync.when(
-      data: (email) {
-        if (email.isEmpty) {
-          return Center(
-            child: Column(
-              children: [
-                Icon(Icons.info_outline, size: 50.r, color: Colors.grey),
-                Text(
-                  AppLocalizations.of(context)!.loginStatment,
-                  style: GoogleFonts.inter(fontSize: 18.sp, color: Colors.grey),
+    final userEmail = ref.watch(prefProvider);
+    final emailAsync = userEmail.maybeWhen(
+      data: (prefs) => prefs.getString('userEmail') ?? '',
+      orElse: () => '',
+    );
+    if (emailAsync.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            Icon(Icons.info_outline, size: 50.r, color: Colors.grey),
+            Text(
+              AppLocalizations.of(context)!.loginStatment,
+              style: GoogleFonts.inter(fontSize: 18.sp, color: Colors.grey),
+            ),
+          ],
+        ),
+      );
+    }
+    return ref
+        .watch(tasksListProvider(emailAsync))
+        .when(
+          data: (tasks) {
+            final filtered = filterTasks(tasks, ref);
+            if (filtered.isEmpty) {
+              return Center(
+                child: Text(
+                  'No tasks yet',
+                  style: GoogleFonts.inter(fontSize: 20.sp, color: Colors.grey),
                 ),
-              ],
+              );
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: filtered.length,
+              itemBuilder: (context, index) =>
+                  FlowTaskItem(task: filtered[index]),
+              separatorBuilder: (_, __) => 10.verticalSpace,
+            );
+          },
+          loading: () => Center(
+            child: CircularProgressIndicator(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          error: (e, s) => Center(child: Text('Error: $e')),
+        );
+  }
+}
+
+class _TaskListOffline extends ConsumerWidget {
+  const _TaskListOffline();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasks = ref.watch(fetchlocalDB);
+    return tasks.when(
+      data: (tasks) {
+        if (tasks.isEmpty) {
+          return Center(
+            child: Text(
+              'No tasks yet',
+              style: GoogleFonts.inter(fontSize: 20.sp, color: Colors.grey),
             ),
           );
         }
-        return ref
-            .watch(tasksListProvider(email))
-            .when(
-              data: (tasks) {
-                final filtered = filterTasks(tasks, ref);
-                if (filtered.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No tasks yet',
-                      style: GoogleFonts.inter(
-                        fontSize: 20.sp,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  );
-                }
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) =>
-                      FlowTaskItem(task: filtered[index]),
-                  separatorBuilder: (_, __) => 10.verticalSpace,
-                );
-              },
-              loading: () => Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              error: (e, s) => Center(child: Text('Error: $e')),
-            );
+        final filtered = filterTasks(tasks, ref);
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: filtered.length,
+          itemBuilder: (context, index) => FlowTaskItem(task: filtered[index]),
+          separatorBuilder: (_, __) => 10.verticalSpace,
+        );
       },
       loading: () => Center(
         child: CircularProgressIndicator(color: Theme.of(context).primaryColor),

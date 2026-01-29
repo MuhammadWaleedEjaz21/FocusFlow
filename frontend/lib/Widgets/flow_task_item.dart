@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Models/task_model.dart';
+import 'package:frontend/Providers/connectivity_provider.dart';
 import 'package:frontend/Providers/localdb_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
@@ -28,10 +29,8 @@ class FlowTaskItem extends ConsumerWidget {
       ref.read(_pickedDateProvider.notifier).state = task.dueDate;
     });
 
-    // Watch the task list to get updated task data
     final tasksAsyncValue = ref.watch(tasksListProvider(task.userEmail));
 
-    // Find the current task in the list
     TaskModel currentTask = tasksAsyncValue.maybeWhen(
       data: (tasks) {
         try {
@@ -182,11 +181,22 @@ class FlowTaskItem extends ConsumerWidget {
                     ref.read(prefProvider.future).then((pref) {
                       final userEmail = pref.getString('userEmail') ?? '';
                       final taskController = ref.read(taskProvider.future);
-                      taskController.then((controller) {
-                        controller.deleteTask(
-                          currentTask.copyWith(userEmail: userEmail),
-                        );
-                      });
+                      final isOnline = ref.read(isOnlineProvider);
+                      if (isOnline) {
+                        taskController.then((controller) {
+                          controller.deleteTask(
+                            currentTask.copyWith(userEmail: userEmail),
+                          );
+                        });
+                      } else {
+                        ref.read(localDBProvider.future).then((
+                          localDBRepo,
+                        ) async {
+                          await localDBRepo.deleteLocalTask(
+                            currentTask.copyWith(userEmail: userEmail),
+                          );
+                        });
+                      }
                     });
                   },
                   style: ElevatedButton.styleFrom(

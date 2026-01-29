@@ -24,14 +24,14 @@ class LocalDBController {
   Future<void> addtoFavourites(TaskModel task) async {
     final localDBService = ref.read(localDBServiceProvider);
     await localDBService.addtoFavourites(task);
-
+    ref.invalidate(fetchlocalDB);
     ref.invalidate(tasksListProvider(task.userEmail));
   }
 
   Future<void> removeFromFavourites(TaskModel task) async {
     final localDBService = ref.read(localDBServiceProvider);
     await localDBService.removeFromFavourites(task);
-
+    ref.invalidate(fetchlocalDB);
     ref.invalidate(tasksListProvider(task.userEmail));
   }
 
@@ -47,10 +47,32 @@ class LocalDBController {
   Future<void> clearFavourites() async {
     final localDBService = ref.read(localDBServiceProvider);
     await localDBService.clearDB();
+
+    ref.invalidate(fetchlocalDB);
   }
 
   Future<void> closeDB() async {
     final localDBService = ref.read(localDBServiceProvider);
     await localDBService.closeDB();
+
+    ref.invalidate(fetchlocalDB);
+  }
+
+  Future<void> addLocalTask(TaskModel task) async {
+    final localDBService = ref.read(localDBServiceProvider);
+    await localDBService.addLocalTask(task);
+    ref.invalidate(fetchlocalDB);
+  }
+
+  Future<void> updateLocalTask(TaskModel task) async {
+    final localDBService = ref.read(localDBServiceProvider);
+    await localDBService.updateLocalTask(task);
+    ref.invalidate(fetchlocalDB);
+  }
+
+  Future<void> deleteLocalTask(TaskModel task) async {
+    final localDBService = ref.read(localDBServiceProvider);
+    await localDBService.removeLocalTask(task.uniqueId);
+    ref.invalidate(fetchlocalDB);
   }
 }

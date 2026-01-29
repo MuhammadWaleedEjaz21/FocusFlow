@@ -8,7 +8,6 @@ import 'package:frontend/Widgets/flow_auth_button.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -137,7 +136,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Consumer(
                             builder: (context, ref, child) {
-                              final pref = SharedPreferences.getInstance();
                               return FlowAuthButton(
                                 onPressed: () async {
                                   if (formKey.currentState!.validate()) {
@@ -145,19 +143,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       final controller = await ref.read(
                                         userProvider.future,
                                       );
-
-                                      final token = await controller.loginUser(
+                                      await controller.loginUser(
                                         _emailController.text.trim(),
                                         _passwordController.text.trim(),
                                       );
 
-                                      final prefs = await pref;
-                                      await prefs.setString('authToken', token);
-                                      await prefs.setString(
-                                        'userEmail',
-                                        _emailController.text.trim(),
-                                      );
-                                      await prefs.setBool('isLoggedIn', true);
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(
                                           context,
