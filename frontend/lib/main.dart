@@ -5,15 +5,17 @@ import 'package:frontend/Providers/color_scheme_provider.dart';
 import 'package:frontend/Providers/lang_selection_provider.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
 import 'package:frontend/Screens/splash_screen.dart';
+import 'package:frontend/Services/localdb_service.dart';
 import 'package:frontend/Services/push_notification_service.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  await localDBInitialize();
   await initializeNotifications();
 
-  final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkMode') ?? false;
   final schemeIndex = prefs.getInt('colorSchemeIndex') ?? 0;
   final lang = prefs.getString('lang') ?? 'en';

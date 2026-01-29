@@ -8,7 +8,8 @@ const taskSchema = new mongoose.Schema({
     category : { type: String, required: true },
     priority : { type: String, required: true , enum: ['low', 'medium', 'high'] },
     dueDate : { type: Date, required: true },
-    isCompleted : { type: Boolean, required: true }
+    isCompleted : { type: Boolean, required: true },
+    isFavorite : { type: Boolean, default: false }
 });
 
 const Task = mongoose.model('Task', taskSchema);

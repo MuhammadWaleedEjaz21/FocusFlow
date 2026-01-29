@@ -7,6 +7,7 @@ class TaskModel {
   final String priority;
   final DateTime dueDate;
   final bool isCompleted;
+  final bool isFavorite;
 
   TaskModel({
     required this.userEmail,
@@ -17,6 +18,7 @@ class TaskModel {
     required this.priority,
     required this.dueDate,
     this.isCompleted = false,
+    this.isFavorite = false,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class TaskModel {
       priority: json['priority'],
       dueDate: DateTime.parse(json['dueDate']),
       isCompleted: json['isCompleted'] ?? false,
+      isFavorite: json['isFavorite'] ?? false,
     );
   }
 
@@ -42,6 +45,7 @@ class TaskModel {
       'priority': priority,
       'dueDate': dueDate.toIso8601String(),
       'isCompleted': isCompleted,
+      'isFavorite': isFavorite,
     };
   }
 
@@ -54,6 +58,7 @@ class TaskModel {
     String? priority,
     DateTime? dueDate,
     bool? isCompleted,
+    bool? isFavorite,
   }) {
     return TaskModel(
       userEmail: userEmail ?? this.userEmail,
@@ -64,6 +69,7 @@ class TaskModel {
       priority: priority ?? this.priority,
       dueDate: dueDate ?? this.dueDate,
       isCompleted: isCompleted ?? this.isCompleted,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 }

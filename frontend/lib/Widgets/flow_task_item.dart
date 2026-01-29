@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Models/task_model.dart';
+import 'package:frontend/Providers/localdb_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Widgets/flow_modal.dart';
@@ -15,16 +16,50 @@ final _pickedDateProvider = StateProvider<DateTime?>((ref) => null);
 class FlowTaskItem extends ConsumerWidget {
   final TaskModel task;
   const FlowTaskItem({super.key, required this.task});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final titleController = TextEditingController(text: task.title);
     final descriptionController = TextEditingController(text: task.description);
+
     Future.microtask(() {
       ref.read(_categorySelectionProvider.notifier).state = task.category;
       ref.read(_prioritySelectionProvider.notifier).state = task.priority;
       ref.read(_pickedDateProvider.notifier).state = task.dueDate;
     });
+
+    // Watch the task list to get updated task data
+    final tasksAsyncValue = ref.watch(tasksListProvider(task.userEmail));
+
+    // Find the current task in the list
+    TaskModel currentTask = tasksAsyncValue.maybeWhen(
+      data: (tasks) {
+        try {
+          return tasks.firstWhere((t) => t.uniqueId == task.uniqueId);
+        } catch (e) {
+          return task;
+        }
+      },
+      orElse: () => task,
+    );
+
     return ExpansionTile(
+      trailing: IconButton(
+        padding: EdgeInsets.zero,
+        onPressed: () async {
+          final controller = await ref.read(localDBProvider.future);
+          if (currentTask.isFavorite == true) {
+            await controller.removeFromFavourites(currentTask);
+          } else {
+            await controller.addtoFavourites(currentTask);
+          }
+        },
+        icon: Icon(
+          currentTask.isFavorite ? Icons.favorite : Icons.favorite_outline,
+          size: 28.r,
+          color: currentTask.isFavorite ? Colors.red : Colors.grey,
+        ),
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       collapsedBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
@@ -32,33 +67,37 @@ class FlowTaskItem extends ConsumerWidget {
         onPressed: () async {
           final taskController = await ref.read(taskProvider.future);
           await taskController.updateTask(
-            task.copyWith(isCompleted: !task.isCompleted),
+            currentTask.copyWith(isCompleted: !currentTask.isCompleted),
           );
         },
         icon: Icon(
-          task.isCompleted ? Icons.check_circle_outline : Icons.circle_outlined,
-          size: 35.r,
-          color: task.isCompleted ? Colors.green : Colors.grey.shade700,
+          currentTask.isCompleted
+              ? Icons.check_circle_outline
+              : Icons.circle_outlined,
+          size: 28.r,
+          color: currentTask.isCompleted ? Colors.green : Colors.grey.shade700,
         ),
       ),
-      showTrailingIcon: false,
+      showTrailingIcon: true,
       collapsedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.r),
-        side: BorderSide(color: Theme.of(context).shadowColor),
+        borderRadius: BorderRadius.circular(15.r),
+        side: BorderSide(color: Theme.of(context).shadowColor, width: 1.5),
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.r),
-        side: BorderSide(color: Theme.of(context).shadowColor),
+        borderRadius: BorderRadius.circular(15.r),
+        side: BorderSide(color: Theme.of(context).shadowColor, width: 1.5),
       ),
       title: Text(
-        task.title,
+        currentTask.title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: GoogleFonts.inter(
-          fontSize: 20.sp,
-          fontWeight: FontWeight.bold,
-          color: task.isCompleted
+          fontSize: 18.sp,
+          fontWeight: FontWeight.w600,
+          color: currentTask.isCompleted
               ? Colors.blueGrey.shade400
               : Theme.of(context).hintColor,
-          decoration: task.isCompleted
+          decoration: currentTask.isCompleted
               ? TextDecoration.lineThrough
               : TextDecoration.none,
           decorationColor: Colors.blueGrey.shade400,
@@ -70,97 +109,104 @@ class FlowTaskItem extends ConsumerWidget {
         shrinkWrap: true,
         children: [
           Text(
-            task.description,
+            currentTask.description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
-              fontSize: 15.sp,
-              color: task.isCompleted
+              fontSize: 14.sp,
+              color: currentTask.isCompleted
                   ? Colors.blueGrey.shade400
-                  : Theme.of(context).hintColor.withAlpha(100),
+                  : Theme.of(context).hintColor.withAlpha(150),
             ),
           ),
-          30.verticalSpace,
-          Row(
-            spacing: 5.w,
-            children: [
-              FlowLabel(
-                title: task.category,
-                color: Theme.of(context).primaryColor,
-              ),
-              FlowLabel(title: task.priority, color: Colors.red),
-              FlowLabel(
-                title: task.dueDate.toString().split(' ')[0],
-                color: Colors.deepOrange,
-              ),
-            ],
+          15.verticalSpace,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              spacing: 8.w,
+              children: [
+                FlowLabel(
+                  title: currentTask.category,
+                  color: Theme.of(context).primaryColor,
+                ),
+                FlowLabel(title: currentTask.priority, color: Colors.red),
+                FlowLabel(
+                  title: currentTask.dueDate.toString().split(' ')[0],
+                  color: Colors.deepOrange,
+                ),
+              ],
+            ),
           ),
         ],
       ),
       children: [
-        Row(
-          spacing: 5.w,
-          children: [
-            5.horizontalSpace,
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => FlowModal(
-                      categorySelectionProvider: _categorySelectionProvider,
-                      prioritySelectionProvider: _prioritySelectionProvider,
-                      pickedDateProvider: _pickedDateProvider,
-                      titleController: titleController,
-                      descriptionController: descriptionController,
-                      toUpdate: true,
-                      taskUniqueId: task.uniqueId,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+          child: Row(
+            spacing: 8.w,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => FlowModal(
+                        categorySelectionProvider: _categorySelectionProvider,
+                        prioritySelectionProvider: _prioritySelectionProvider,
+                        pickedDateProvider: _pickedDateProvider,
+                        titleController: titleController,
+                        descriptionController: descriptionController,
+                        toUpdate: true,
+                        taskUniqueId: currentTask.uniqueId,
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green,
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.r),
+                    textStyle: GoogleFonts.inter(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  textStyle: GoogleFonts.inter(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  child: Text('Update'),
                 ),
-                child: Text('Update'),
               ),
-            ),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  ref.read(prefProvider.future).then((pref) {
-                    final userEmail = pref.getString('userEmail') ?? '';
-                    final taskController = ref.read(taskProvider.future);
-                    taskController.then((controller) {
-                      controller.deleteTask(
-                        task.copyWith(userEmail: userEmail),
-                      );
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    ref.read(prefProvider.future).then((pref) {
+                      final userEmail = pref.getString('userEmail') ?? '';
+                      final taskController = ref.read(taskProvider.future);
+                      taskController.then((controller) {
+                        controller.deleteTask(
+                          currentTask.copyWith(userEmail: userEmail),
+                        );
+                      });
                     });
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.r),
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red,
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    textStyle: GoogleFonts.inter(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  textStyle: GoogleFonts.inter(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  child: Text('Delete'),
                 ),
-                child: Text('Delete'),
               ),
-            ),
-            5.horizontalSpace,
-          ],
+            ],
+          ),
         ),
-        10.verticalSpace,
       ],
     );
   }
@@ -174,17 +220,17 @@ class FlowLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(5.r),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: color.withAlpha(75),
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(15.r),
       ),
       child: Text(
         title.replaceFirst(RegExp(r'[a-z]'), title[0].toUpperCase()),
         style: GoogleFonts.inter(
-          fontSize: 15.sp,
+          fontSize: 13.sp,
           color: color,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
