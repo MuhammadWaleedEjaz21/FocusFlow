@@ -22,4 +22,6 @@ class LocalDB extends HiveObject {
   late final bool isCompleted;
   @HiveField(8)
   late final bool isFavorite;
+  @HiveField(9)
+  bool isPendingSync = false;
 }

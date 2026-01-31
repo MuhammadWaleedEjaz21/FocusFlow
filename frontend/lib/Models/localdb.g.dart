@@ -25,13 +25,14 @@ class LocalDBAdapter extends TypeAdapter<LocalDB> {
       ..priority = fields[5] as String
       ..dueDate = fields[6] as DateTime
       ..isCompleted = fields[7] as bool
-      ..isFavorite = fields[8] as bool;
+      ..isFavorite = fields[8] as bool
+      ..isPendingSync = fields[9] as bool;
   }
 
   @override
   void write(BinaryWriter writer, LocalDB obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.userEmail)
       ..writeByte(1)
@@ -49,7 +50,9 @@ class LocalDBAdapter extends TypeAdapter<LocalDB> {
       ..writeByte(7)
       ..write(obj.isCompleted)
       ..writeByte(8)
-      ..write(obj.isFavorite);
+      ..write(obj.isFavorite)
+      ..writeByte(9)
+      ..write(obj.isPendingSync);
   }
 
   @override

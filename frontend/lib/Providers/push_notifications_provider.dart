@@ -7,5 +7,6 @@ final pushNotificationServiceProvider = Provider((ref) {
 });
 final StateProvider<bool> isNotificationsInitializedProvider =
     StateProvider<bool>((ref) => false);
-final StateProvider<bool> isSoundOnProvider =
-    StateProvider<bool>((ref) => true);
+final StateProvider<bool> isSoundOnProvider = StateProvider<bool>(
+  (ref) => false,
+);

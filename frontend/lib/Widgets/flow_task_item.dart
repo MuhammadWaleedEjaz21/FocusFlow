@@ -22,6 +22,9 @@ class FlowTaskItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final titleController = TextEditingController(text: task.title);
     final descriptionController = TextEditingController(text: task.description);
+    final isOnline = ref.watch(isOnlineProvider);
+    final isLoggedIn = ref.watch(isLoggedInProvider);
+    final useLocalDb = !isOnline || !isLoggedIn;
 
     Future.microtask(() {
       ref.read(_categorySelectionProvider.notifier).state = task.category;
@@ -29,18 +32,20 @@ class FlowTaskItem extends ConsumerWidget {
       ref.read(_pickedDateProvider.notifier).state = task.dueDate;
     });
 
-    final tasksAsyncValue = ref.watch(tasksListProvider(task.userEmail));
-
-    TaskModel currentTask = tasksAsyncValue.maybeWhen(
-      data: (tasks) {
-        try {
-          return tasks.firstWhere((t) => t.uniqueId == task.uniqueId);
-        } catch (e) {
-          return task;
-        }
-      },
-      orElse: () => task,
-    );
+    TaskModel currentTask = task;
+    if (!useLocalDb) {
+      final tasksAsyncValue = ref.watch(tasksListProvider(task.userEmail));
+      currentTask = tasksAsyncValue.maybeWhen(
+        data: (tasks) {
+          try {
+            return tasks.firstWhere((t) => t.uniqueId == task.uniqueId);
+          } catch (e) {
+            return task;
+          }
+        },
+        orElse: () => task,
+      );
+    }
 
     return ExpansionTile(
       trailing: IconButton(
@@ -64,10 +69,17 @@ class FlowTaskItem extends ConsumerWidget {
 
       leading: IconButton(
         onPressed: () async {
-          final taskController = await ref.read(taskProvider.future);
-          await taskController.updateTask(
-            currentTask.copyWith(isCompleted: !currentTask.isCompleted),
-          );
+          if (useLocalDb) {
+            final localDb = await ref.read(localDBProvider.future);
+            await localDb.updateLocalTask(
+              currentTask.copyWith(isCompleted: !currentTask.isCompleted),
+            );
+          } else {
+            final taskController = await ref.read(taskProvider.future);
+            await taskController.updateTask(
+              currentTask.copyWith(isCompleted: !currentTask.isCompleted),
+            );
+          }
         },
         icon: Icon(
           currentTask.isCompleted
@@ -77,7 +89,7 @@ class FlowTaskItem extends ConsumerWidget {
           color: currentTask.isCompleted ? Colors.green : Colors.grey.shade700,
         ),
       ),
-      showTrailingIcon: true,
+      showTrailingIcon: useLocalDb ? false : true,
       collapsedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.r),
         side: BorderSide(color: Theme.of(context).shadowColor, width: 1.5),
@@ -180,9 +192,8 @@ class FlowTaskItem extends ConsumerWidget {
                   onPressed: () {
                     ref.read(prefProvider.future).then((pref) {
                       final userEmail = pref.getString('userEmail') ?? '';
-                      final taskController = ref.read(taskProvider.future);
-                      final isOnline = ref.read(isOnlineProvider);
-                      if (isOnline) {
+                      if (!useLocalDb) {
+                        final taskController = ref.read(taskProvider.future);
                         taskController.then((controller) {
                           controller.deleteTask(
                             currentTask.copyWith(userEmail: userEmail),

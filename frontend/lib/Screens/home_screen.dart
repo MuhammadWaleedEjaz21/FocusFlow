@@ -8,6 +8,7 @@ import 'package:frontend/Providers/localdb_provider.dart';
 import 'package:frontend/Providers/status_selection_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
+import 'package:frontend/Providers/weather_provider.dart';
 import 'package:frontend/Services/task_filter_service.dart';
 import 'package:frontend/Widgets/flow_app_bar.dart';
 import 'package:frontend/Widgets/flow_category_button.dart';
@@ -30,6 +31,8 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isOnline = ref.watch(isOnlineProvider);
+    final isLoggedIn = ref.watch(isLoggedInProvider);
+    final useLocalDb = !isOnline || !isLoggedIn;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: const FlowDrawer(),
@@ -38,21 +41,40 @@ class HomeScreen extends ConsumerWidget {
           const Expanded(child: _HomeHeader()),
           Expanded(
             flex: 3,
-            child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 15.w),
-              children: [
-                30.verticalSpace,
-                isOnline
-                    ? const _OverviewSection()
-                    : const _OverviewSectionOffline(),
-                20.verticalSpace,
-                const _StatusFilter(),
-                20.verticalSpace,
-                const _CategoryFilter(),
-                20.verticalSpace,
-                if (isOnline) const _TasksList() else const _TaskListOffline(),
-                20.verticalSpace,
-              ],
+            child: RefreshIndicator(
+              color: Theme.of(context).primaryColor,
+              onRefresh: () async {
+                final userEmail = ref
+                    .read(prefProvider)
+                    .maybeWhen(
+                      data: (prefs) => prefs.getString('userEmail') ?? '',
+                      orElse: () => '',
+                    );
+                if (userEmail.isNotEmpty) {
+                  ref.invalidate(tasksListProvider(userEmail));
+                }
+              },
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                children: [
+                  30.verticalSpace,
+                  const _WeatherSuggestion(),
+                  20.verticalSpace,
+                  useLocalDb
+                      ? const _OverviewSectionOffline()
+                      : const _OverviewSection(),
+                  20.verticalSpace,
+                  const _StatusFilter(),
+                  20.verticalSpace,
+                  const _CategoryFilter(),
+                  20.verticalSpace,
+                  if (useLocalDb)
+                    const _TaskListOffline()
+                  else
+                    const _TasksList(),
+                  20.verticalSpace,
+                ],
+              ),
             ),
           ),
         ],
@@ -109,6 +131,54 @@ class _HomeHeader extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _WeatherSuggestion extends ConsumerWidget {
+  const _WeatherSuggestion();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final suggestion = ref.watch(weatherSuggestionProvider);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).primaryColor,
+            Theme.of(context).primaryColorLight,
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).shadowColor,
+            spreadRadius: 3.r,
+            blurRadius: 8.r,
+            offset: Offset(0, 4.h),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.wb_sunny_outlined, color: Colors.white, size: 30.r),
+          15.horizontalSpace,
+          Expanded(
+            child: Text(
+              suggestion,
+              style: GoogleFonts.inter(
+                fontSize: 16.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

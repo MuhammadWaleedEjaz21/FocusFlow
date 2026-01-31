@@ -133,11 +133,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            AppLocalizations.of(context)!.rememberYourPassword,
-                            style: GoogleFonts.inter(
-                              color: Theme.of(context).hintColor,
-                              fontSize: 20.sp,
+                          Flexible(
+                            child: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.rememberYourPassword,
+                              style: GoogleFonts.inter(
+                                color: Theme.of(context).hintColor,
+                                fontSize: 18.sp,
+                              ),
                             ),
                           ),
                           TextButton(

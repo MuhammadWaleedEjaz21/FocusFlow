@@ -41,7 +41,9 @@ class LocalDBController {
     final userEmail = await ref
         .read(prefProvider.future)
         .then((prefs) => prefs.getString('userEmail') ?? '');
+    // Invalidate both task lists and local DB to refresh UI
     ref.invalidate(tasksListProvider(userEmail));
+    ref.invalidate(fetchlocalDB);
   }
 
   Future<void> clearFavourites() async {

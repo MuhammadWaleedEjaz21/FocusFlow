@@ -258,6 +258,8 @@ class FlowModal extends StatelessWidget {
                     child: Consumer(
                       builder: (context, ref, child) {
                         final isOnline = ref.watch(isOnlineProvider);
+                        final isLoggedIn = ref.watch(isLoggedInProvider);
+                        final useLocalDb = !isOnline || !isLoggedIn;
                         final categorySelection = ref.watch(
                           categorySelectionProvider,
                         );
@@ -281,31 +283,27 @@ class FlowModal extends StatelessWidget {
                                 priority: prioritySelection,
                                 dueDate: pickedDate ?? DateTime.now(),
                               );
+                              if (useLocalDb) {
+                                await ref.read(localDBProvider.future).then((
+                                  localDBRepo,
+                                ) async {
+                                  if (toUpdate) {
+                                    await localDBRepo.updateLocalTask(newTask);
+                                  } else {
+                                    await localDBRepo.addLocalTask(newTask);
+                                  }
+                                });
+                                Navigator.of(context).pop();
+                                return;
+                              }
+
                               await ref.read(taskProvider.future).then((
                                 taskRepo,
                               ) async {
                                 if (toUpdate) {
-                                  if (isOnline) {
-                                    await taskRepo.updateTask(newTask);
-                                  } else {
-                                    await ref.read(localDBProvider.future).then(
-                                      (localDBRepo) async {
-                                        await localDBRepo.updateLocalTask(
-                                          newTask,
-                                        );
-                                      },
-                                    );
-                                  }
+                                  await taskRepo.updateTask(newTask);
                                 } else {
-                                  if (isOnline) {
-                                    await taskRepo.addTask(newTask);
-                                  } else {
-                                    await ref.read(localDBProvider.future).then(
-                                      (localDBRepo) async {
-                                        await localDBRepo.addLocalTask(newTask);
-                                      },
-                                    );
-                                  }
+                                  await taskRepo.addTask(newTask);
                                 }
                                 Navigator.of(context).pop();
                               });

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/color_scheme_provider.dart';
 import 'package:frontend/Providers/lang_selection_provider.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
+import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Screens/splash_screen.dart';
 import 'package:frontend/Services/localdb_service.dart';
 import 'package:frontend/Services/push_notification_service.dart';
@@ -21,6 +22,7 @@ void main() async {
   final lang = prefs.getString('lang') ?? 'en';
   final isNotificationOn = prefs.getBool('isNotificationsInitialized') ?? false;
   final isSoundOn = prefs.getBool('isSoundOn') ?? true;
+  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
   runApp(
     ProviderScope(
@@ -32,6 +34,7 @@ void main() async {
           (ref) => isNotificationOn,
         ),
         isSoundOnProvider.overrideWith((ref) => isSoundOn),
+        isLoggedInProvider.overrideWith((ref) => isLoggedIn),
       ],
       child: const MyApp(),
     ),

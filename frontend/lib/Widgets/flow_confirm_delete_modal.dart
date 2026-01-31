@@ -44,6 +44,7 @@ class FlowConfirmDeleteModal extends ConsumerWidget {
                     controller.deleteUser(email);
                   }
                   prefs.setBool('isLoggedIn', false);
+                  ref.read(isLoggedInProvider.notifier).state = false;
                   Navigator.pop(context);
                 } catch (e) {
                   ScaffoldMessenger.of(
