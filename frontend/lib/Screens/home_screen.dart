@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/catergory_selection_provider.dart';
 import 'package:frontend/Providers/connectivity_provider.dart';
+import 'package:frontend/Providers/lang_selection_provider.dart';
 import 'package:frontend/Providers/localdb_provider.dart';
 import 'package:frontend/Providers/status_selection_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
@@ -20,6 +21,7 @@ import 'package:frontend/Widgets/flow_status_button.dart';
 import 'package:frontend/Widgets/flow_task_item.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:upgrader/upgrader.dart';
 
 final _modalCategoryProvider = StateProvider.autoDispose<String>((ref) => '');
 final _modalPriorityProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -33,51 +35,58 @@ class HomeScreen extends ConsumerWidget {
     final isOnline = ref.watch(isOnlineProvider);
     final isLoggedIn = ref.watch(isLoggedInProvider);
     final useLocalDb = !isOnline || !isLoggedIn;
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawer: const FlowDrawer(),
-      body: Column(
-        children: [
-          const Expanded(child: _HomeHeader()),
-          Expanded(
-            flex: 3,
-            child: RefreshIndicator(
-              color: Theme.of(context).primaryColor,
-              onRefresh: () async {
-                final userEmail = ref
-                    .read(prefProvider)
-                    .maybeWhen(
-                      data: (prefs) => prefs.getString('userEmail') ?? '',
-                      orElse: () => '',
-                    );
-                if (userEmail.isNotEmpty) {
-                  ref.invalidate(tasksListProvider(userEmail));
-                }
-              },
-              child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 15.w),
-                children: [
-                  30.verticalSpace,
-                  const _WeatherSuggestion(),
-                  20.verticalSpace,
-                  useLocalDb
-                      ? const _OverviewSectionOffline()
-                      : const _OverviewSection(),
-                  20.verticalSpace,
-                  const _StatusFilter(),
-                  20.verticalSpace,
-                  const _CategoryFilter(),
-                  20.verticalSpace,
-                  if (useLocalDb)
-                    const _TaskListOffline()
-                  else
-                    const _TasksList(),
-                  20.verticalSpace,
-                ],
+    return UpgradeAlert(
+      upgrader: Upgrader(
+        debugDisplayAlways: true,
+        countryCode: ref.watch(langSelectionProvider),
+        
+      ),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        drawer: const FlowDrawer(),
+        body: Column(
+          children: [
+            const Expanded(child: _HomeHeader()),
+            Expanded(
+              flex: 3,
+              child: RefreshIndicator(
+                color: Theme.of(context).primaryColor,
+                onRefresh: () async {
+                  final userEmail = ref
+                      .read(prefProvider)
+                      .maybeWhen(
+                        data: (prefs) => prefs.getString('userEmail') ?? '',
+                        orElse: () => '',
+                      );
+                  if (userEmail.isNotEmpty) {
+                    ref.invalidate(tasksListProvider(userEmail));
+                  }
+                },
+                child: ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  children: [
+                    30.verticalSpace,
+                    const _WeatherSuggestion(),
+                    20.verticalSpace,
+                    useLocalDb
+                        ? const _OverviewSectionOffline()
+                        : const _OverviewSection(),
+                    20.verticalSpace,
+                    const _StatusFilter(),
+                    20.verticalSpace,
+                    const _CategoryFilter(),
+                    20.verticalSpace,
+                    if (useLocalDb)
+                      const _TaskListOffline()
+                    else
+                      const _TasksList(),
+                    20.verticalSpace,
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
