@@ -9,26 +9,48 @@ final prefProvider = FutureProvider<SharedPreferences>(
   (ref) => SharedPreferences.getInstance(),
 );
 
-final tokenProvider = FutureProvider<String>((ref) async {
+final accessTokenProvider = FutureProvider<String>((ref) async {
   final prefs = await ref.watch(prefProvider.future);
-  return prefs.getString('authToken') ?? '';
+  return prefs.getString('accessToken') ?? '';
+});
+
+final refreshTokenProvider = FutureProvider<String>((ref) async {
+  final prefs = await ref.watch(prefProvider.future);
+  return prefs.getString('refreshToken') ?? '';
+});
+
+final tokenProvider = FutureProvider<String>((ref) async {
+  return await ref.watch(accessTokenProvider.future);
 });
 
 final isLoggedInProvider = StateProvider<bool>((ref) => false);
 
-final userServiceProvider = Provider((ref) => UserService());
+final userServiceProvider = Provider((ref) {
+  final userService = UserService();
+
+  userService.onTokenExpired = () async {
+    try {
+      final userController = await ref.read(userProvider.future);
+      return await userController.refreshAccessToken();
+    } catch (e) {
+      throw Exception('Token refresh failed: $e');
+    }
+  };
+
+  return userService;
+});
 
 final fetchuserProvider = FutureProvider.family<UserModel, String>((
   ref,
   userEmail,
 ) async {
-  final token = await ref.read(tokenProvider.future);
+  final token = await ref.read(accessTokenProvider.future);
   final userService = ref.watch(userServiceProvider);
   return userService.fetchUserData(userEmail, token);
 });
 
 final userProvider = FutureProvider<UserController>((ref) async {
-  final token = await ref.watch(tokenProvider.future);
+  final token = await ref.watch(accessTokenProvider.future);
   return UserController(ref, token);
 });
 
@@ -57,30 +79,63 @@ class UserController {
 
   Future<String> loginUser(String email, String password) async {
     final userService = ref.watch(userServiceProvider);
-    final token = await userService.loginUser(email, password);
+    final tokens = await userService.loginUser(email, password);
 
     final prefs = await ref.watch(prefProvider.future);
-    await prefs.setString('authToken', token);
+    await prefs.setString('accessToken', tokens['accessToken'] ?? '');
+    await prefs.setString('refreshToken', tokens['refreshToken'] ?? '');
     await prefs.setString('userEmail', email);
     await prefs.setBool('isLoggedIn', true);
 
     ref.read(isLoggedInProvider.notifier).state = true;
     ref.invalidate(prefProvider);
-    ref.invalidate(tokenProvider);
+    ref.invalidate(accessTokenProvider);
+    ref.invalidate(refreshTokenProvider);
     ref.invalidate(fetchuserProvider.call(email));
     ref.invalidate(tasksListProvider);
 
-    return token;
+    return tokens['accessToken'] ?? '';
+  }
+
+  Future<String> refreshAccessToken() async {
+    final userService = ref.watch(userServiceProvider);
+    final prefs = await ref.watch(prefProvider.future);
+    final refreshToken = prefs.getString('refreshToken') ?? '';
+
+    if (refreshToken.isEmpty) {
+      await logoutUser();
+      throw Exception('No refresh token available');
+    }
+
+    try {
+      final newAccessToken = await userService.refreshToken(refreshToken);
+      await prefs.setString('accessToken', newAccessToken);
+      ref.invalidate(accessTokenProvider);
+      return newAccessToken;
+    } catch (e) {
+      await logoutUser();
+      rethrow;
+    }
   }
 
   Future<void> logoutUser() async {
     final prefs = await ref.watch(prefProvider.future);
+    final email = prefs.getString('userEmail');
+
+    try {
+      final userService = ref.watch(userServiceProvider);
+      if (email != null) {
+        await userService.logoutUser(email);
+      }
+    } catch (e) {}
+
     await prefs.clear();
     ref.read(isLoggedInProvider.notifier).state = false;
     ref.invalidate(prefProvider);
     ref.invalidate(fetchuserProvider);
     ref.invalidate(tasksListProvider);
-    ref.invalidate(tokenProvider);
+    ref.invalidate(accessTokenProvider);
+    ref.invalidate(refreshTokenProvider);
   }
 
   Future<void> sendOTP(String email) async {

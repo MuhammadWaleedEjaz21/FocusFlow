@@ -1,25 +1,34 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/Models/task_model.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
+import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Services/task_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final prefs = SharedPreferences.getInstance();
+
 final taskServiceProvider = Provider<TaskService>((ref) {
-  return TaskService();
+  final taskService = TaskService();
+
+  taskService.onTokenExpired = () async {
+    final userController = await ref.read(userProvider.future);
+    return await userController.refreshAccessToken();
+  };
+
+  return taskService;
 });
 
 final tasksListProvider = FutureProvider.family<List<TaskModel>, String>((
   ref,
   userEmail,
 ) async {
-  final token = await prefs.then((prefs) => prefs.getString('authToken') ?? '');
+  final token = await ref.read(accessTokenProvider.future);
   final taskService = ref.watch(taskServiceProvider);
   return await taskService.fetchTasks(userEmail, token);
 });
 
 final taskProvider = FutureProvider<TaskController>((ref) async {
-  final token = await prefs.then((prefs) => prefs.getString('authToken') ?? '');
+  final token = await ref.read(accessTokenProvider.future);
   return TaskController(ref, token);
 });
 

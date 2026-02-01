@@ -6,6 +6,8 @@ const authMiddleware = require('../Middlewares/auth_middleware');
 router.get('/:userEmail', authMiddleware, UserController.fetchUser);
 router.post('/signup', UserController.addUser);
 router.post('/login', UserController.loginUser);
+router.post('/refresh-token', UserController.refreshTokenUser);
+router.post('/logout', UserController.logoutUser);
 router.patch('/:userEmail', authMiddleware, UserController.updateUser);
 router.delete('/:userEmail', authMiddleware, UserController.deleteUser);
 router.post('/send-otp', UserController.sendOTP);
