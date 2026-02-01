@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend/Providers/color_scheme_provider.dart';
+import 'package:frontend/Providers/connectivity_provider.dart';
 import 'package:frontend/Providers/lang_selection_provider.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
@@ -46,6 +47,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(connectivityListenerProvider);
+
     final lang = ref.watch(langSelectionProvider);
     final isDark = ref.watch(isDarkModeProvider);
     final schemeIndex = ref.watch(colorSchemeIndexProvider);

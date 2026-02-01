@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:frontend/Models/user_model.dart';
+import 'package:frontend/Providers/localdb_provider.dart';
 import 'package:frontend/Providers/task_provider.dart';
 import 'package:frontend/Services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -127,6 +128,11 @@ class UserController {
       if (email != null) {
         await userService.logoutUser(email);
       }
+    } catch (e) {}
+
+    try {
+      final localDBService = ref.watch(localDBServiceProvider);
+      await localDBService.clearDB();
     } catch (e) {}
 
     await prefs.clear();

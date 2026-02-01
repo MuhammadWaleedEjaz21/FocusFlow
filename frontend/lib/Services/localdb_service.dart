@@ -71,7 +71,7 @@ class LocaldbService {
   Future<bool> _canSyncToServer() async {
     final prefs = await ref.read(prefProvider.future);
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    final token = prefs.getString('authToken') ?? '';
+    final token = prefs.getString('accessToken') ?? '';
     return isLoggedIn && token.isNotEmpty;
   }
 
@@ -121,9 +121,13 @@ class LocaldbService {
   }
 
   Future<List<TaskModel>> getFavourites() async {
+    final prefs = await ref.read(prefProvider.future);
+    final currentUserEmail = prefs.getString('userEmail') ?? '';
+
     final box = Hive.box('favouriteBox');
     return box.values
         .cast<LocalDB>()
+        .where((localDB) => localDB.userEmail == currentUserEmail)
         .map(
           (localDB) => TaskModel(
             userEmail: localDB.userEmail,
