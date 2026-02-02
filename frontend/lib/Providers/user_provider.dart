@@ -80,6 +80,8 @@ class UserController {
 
   Future<String> loginUser(String email, String password) async {
     final userService = ref.watch(userServiceProvider);
+    final localDB = ref.watch(localDBServiceProvider);
+    await localDB.clearDB();
     final tokens = await userService.loginUser(email, password);
 
     final prefs = await ref.watch(prefProvider.future);
