@@ -37,9 +37,8 @@ class HomeScreen extends ConsumerWidget {
     final useLocalDb = !isOnline || !isLoggedIn;
     return UpgradeAlert(
       upgrader: Upgrader(
-        debugDisplayAlways: true,
+        minAppVersion: '1.0.0',
         countryCode: ref.watch(langSelectionProvider),
-        
       ),
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
