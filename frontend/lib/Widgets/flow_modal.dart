@@ -227,10 +227,13 @@ class FlowModal extends StatelessWidget {
                 builder: (context, ref, child) {
                   return ElevatedButton(
                     onPressed: () async {
+                      final tomorrow = DateTime.now().add(
+                        const Duration(days: 1),
+                      );
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
+                        initialDate: tomorrow,
+                        firstDate: tomorrow,
                         lastDate: DateTime(2100),
                       );
                       if (pickedDate != null) {

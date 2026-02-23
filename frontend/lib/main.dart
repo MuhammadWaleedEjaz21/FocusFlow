@@ -22,7 +22,7 @@ void main() async {
   final schemeIndex = prefs.getInt('colorSchemeIndex') ?? 0;
   final lang = prefs.getString('lang') ?? 'en';
   final isNotificationOn = prefs.getBool('isNotificationsInitialized') ?? false;
-  final isSoundOn = prefs.getBool('isSoundOn') ?? true;
+  final isSoundOn = prefs.getBool('isSoundOn') ?? false;
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
   runApp(

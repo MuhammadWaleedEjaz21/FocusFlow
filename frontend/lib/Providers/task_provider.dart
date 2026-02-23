@@ -43,7 +43,7 @@ class TaskController {
       await ref
           .read(pushNotificationServiceProvider)
           .scheduleNotification(
-            id: 0,
+            id: task.uniqueId.hashCode,
             title: task.title,
             body: task.description,
             scheduledDate: task.dueDate,
@@ -60,7 +60,7 @@ class TaskController {
       await ref
           .read(pushNotificationServiceProvider)
           .scheduleNotification(
-            id: 0,
+            id: task.uniqueId.hashCode,
             title: task.title,
             body: task.description,
             scheduledDate: task.dueDate,
@@ -73,7 +73,13 @@ class TaskController {
 
   Future<void> deleteTask(TaskModel task) async {
     await ref.watch(taskServiceProvider).deleteTask(task.uniqueId, token);
-
+    try {
+      await ref
+          .read(pushNotificationServiceProvider)
+          .cancelNotification(task.uniqueId.hashCode);
+    } catch (e) {
+      print('Error cancelling notification: $e');
+    }
     ref.invalidate(tasksListProvider(task.userEmail));
   }
 }

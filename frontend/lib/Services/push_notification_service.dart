@@ -53,14 +53,18 @@ class PushNotificationService {
     required DateTime scheduledDate,
     String? payload,
   }) async {
-    final isSoundOn = ref.watch(isSoundOnProvider);
-    final isNotificationOn = ref.watch(isNotificationsInitializedProvider);
+    final isSoundOn = ref.read(isSoundOnProvider);
+    final isNotificationOn = ref.read(isNotificationsInitializedProvider);
     if (isNotificationOn != true) {
       await cancelAllNotifications();
       return;
     } else {
       try {
         final tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+        if (tzScheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
+          print('Skipping notification for past date: $scheduledDate');
+          return;
+        }
         final AndroidNotificationDetails androidPlatformChannelSpecifics;
         if (isSoundOn) {
           androidPlatformChannelSpecifics = AndroidNotificationDetails(

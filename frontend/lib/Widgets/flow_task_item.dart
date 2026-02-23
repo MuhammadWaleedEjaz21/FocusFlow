@@ -141,10 +141,7 @@ class FlowTaskItem extends ConsumerWidget {
                   color: Theme.of(context).primaryColor,
                 ),
                 FlowLabel(title: currentTask.priority, color: Colors.red),
-                FlowLabel(
-                  title: currentTask.dueDate.toString().split(' ')[0],
-                  color: Colors.deepOrange,
-                ),
+                _DueDateLabel(dueDate: currentTask.dueDate),
               ],
             ),
           ),
@@ -252,6 +249,41 @@ class FlowLabel extends StatelessWidget {
           fontSize: 13.sp,
           color: color,
           fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _DueDateLabel extends StatelessWidget {
+  final DateTime dueDate;
+  const _DueDateLabel({required this.dueDate});
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final due = DateTime(dueDate.year, dueDate.month, dueDate.day);
+    final isPast = due.isBefore(today);
+
+    final dateText = dueDate.toString().split(' ')[0];
+    final color = isPast ? Colors.grey : Colors.deepOrange;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: color.withAlpha(75),
+        borderRadius: BorderRadius.circular(15.r),
+      ),
+      child: Text(
+        dateText,
+        style: GoogleFonts.inter(
+          fontSize: 13.sp,
+          color: color,
+          fontWeight: FontWeight.w600,
+          decoration: isPast ? TextDecoration.lineThrough : TextDecoration.none,
+          decorationColor: Colors.grey,
+          decorationThickness: 2,
         ),
       ),
     );

@@ -132,10 +132,28 @@ const sendOTP = async (req, res) => {
         });
 
         await transporter.sendMail({
-            from: process.env.EMAIL,
+            from: `"FocusFlow" <${process.env.EMAIL}>`,
             to: userEmail,
-            subject: "FocusFlow - OTP Verification",
-            text: `Your OTP for FocusFlow is: ${otp}. It expires in 10 minutes.`
+            subject: "Your FocusFlow Verification Code",
+            html: `
+                <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
+                    <div style="background: linear-gradient(135deg, #6C63FF, #4A42E8); padding: 32px 24px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px;">FocusFlow</h1>
+                        <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 14px;">Stay focused. Stay productive.</p>
+                    </div>
+                    <div style="padding: 36px 32px; text-align: center;">
+                        <h2 style="color: #1a1a2e; margin: 0 0 12px; font-size: 20px; font-weight: 600;">Verification Code</h2>
+                        <p style="color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 28px;">Use the code below to verify your identity. This code is valid for <strong>10 minutes</strong>.</p>
+                        <div style="background: #f4f3ff; border: 2px dashed #6C63FF; border-radius: 10px; padding: 20px; display: inline-block;">
+                            <span style="font-size: 36px; font-weight: 700; letter-spacing: 10px; color: #4A42E8;">${otp}</span>
+                        </div>
+                        <p style="color: #888; font-size: 13px; margin: 28px 0 0; line-height: 1.5;">If you didn't request this code, you can safely ignore this email.</p>
+                    </div>
+                    <div style="background: #f9f9fb; padding: 16px 32px; text-align: center; border-top: 1px solid #eee;">
+                        <p style="color: #aaa; font-size: 12px; margin: 0;">&copy; ${new Date().getFullYear()} FocusFlow. All rights reserved.</p>
+                    </div>
+                </div>
+            `
         });
 
         const newOTP = new OTP({ userEmail, otp });
