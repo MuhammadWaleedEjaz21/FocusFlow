@@ -290,7 +290,7 @@ class LocaldbService {
 
   Future<void> clearDB() async {
     final box = Hive.box('favouriteBox');
-    if (box .isNotEmpty) {
+    if (box.isNotEmpty) {
       await box.clear();
     }
 

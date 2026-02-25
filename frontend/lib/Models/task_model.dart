@@ -22,14 +22,32 @@ class TaskModel {
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
+    final userEmail = json['userEmail'];
+    final uniqueId = json['uniqueId'];
+    final title = json['title'];
+    final description = json['description'];
+    final category = json['category'];
+    final priority = json['priority'];
+    final dueDate = json['dueDate'];
+
+    if (userEmail == null ||
+        uniqueId == null ||
+        title == null ||
+        description == null ||
+        category == null ||
+        priority == null ||
+        dueDate == null) {
+      throw FormatException('Missing required fields in TaskModel JSON: $json');
+    }
+
     return TaskModel(
-      userEmail: json['userEmail'],
-      uniqueId: json['uniqueId'],
-      title: json['title'],
-      description: json['description'],
-      category: json['category'],
-      priority: json['priority'],
-      dueDate: DateTime.parse(json['dueDate']),
+      userEmail: userEmail as String,
+      uniqueId: uniqueId as String,
+      title: title as String,
+      description: description as String,
+      category: category as String,
+      priority: priority as String,
+      dueDate: DateTime.parse(dueDate as String),
       isCompleted: json['isCompleted'] ?? false,
       isFavorite: json['isFavorite'] ?? false,
     );
