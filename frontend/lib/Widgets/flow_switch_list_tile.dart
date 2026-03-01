@@ -31,7 +31,7 @@ class FlowSwitchListTile extends StatelessWidget {
       ),
       subtitle: Text(
         subtitle,
-        style: GoogleFonts.inter(fontSize: 16.sp, color: Colors.grey.shade600),
+        style: GoogleFonts.inter(fontSize: 16.sp, color: Colors.grey.shade500),
       ),
       inactiveThumbColor: Colors.white,
       inactiveTrackColor: Colors.grey.shade300,
