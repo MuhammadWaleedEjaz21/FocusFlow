@@ -112,7 +112,7 @@ class _AppearanceSection extends ConsumerWidget {
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemCount: lightschemes.length,
-                separatorBuilder: (_, __) => 5.horizontalSpace,
+                separatorBuilder: (_, _) => 5.horizontalSpace,
                 itemBuilder: (context, index) => FlowGradientButton(
                   colors: lightschemes[index].colors,
                   onPressed: () async {

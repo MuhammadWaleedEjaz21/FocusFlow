@@ -366,7 +366,7 @@ class _TasksList extends ConsumerWidget {
               itemCount: filtered.length,
               itemBuilder: (context, index) =>
                   FlowTaskItem(task: filtered[index]),
-              separatorBuilder: (_, __) => 10.verticalSpace,
+              separatorBuilder: (_, _) => 10.verticalSpace,
             );
           },
           loading: () => Center(
@@ -401,7 +401,7 @@ class _TaskListOffline extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: filtered.length,
           itemBuilder: (context, index) => FlowTaskItem(task: filtered[index]),
-          separatorBuilder: (_, __) => 10.verticalSpace,
+          separatorBuilder: (_, _) => 10.verticalSpace,
         );
       },
       loading: () => Center(
