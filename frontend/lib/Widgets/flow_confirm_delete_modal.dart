@@ -13,6 +13,10 @@ class FlowConfirmDeleteModal extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Dialog(
       child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
         padding: EdgeInsets.all(20.r),
         child: ListView(
           shrinkWrap: true,
