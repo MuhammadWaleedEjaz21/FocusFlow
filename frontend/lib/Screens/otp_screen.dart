@@ -86,17 +86,23 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                             final controller = await ref.read(
                               userProvider.future,
                             );
-                            controller.verifyOTP(widget.email, value);
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ResetPasswordScreen(email: widget.email),
-                              ),
-                            );
+                            await controller.verifyOTP(widget.email, value);
+                            if (context.mounted) {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ResetPasswordScreen(email: widget.email),
+                                ),
+                              );
+                            }
                           } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString())),
-                            );
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(e.toString().split(': ').last),
+                                ),
+                              );
+                            }
                           }
                         },
                       ),

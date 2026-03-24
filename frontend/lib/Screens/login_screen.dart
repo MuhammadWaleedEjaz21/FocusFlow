@@ -134,58 +134,60 @@ class _LoginScreenState extends State<LoginScreen> {
                       30.verticalSpace,
                       Row(
                         children: [
-                          Consumer(
-                            builder: (context, ref, child) {
-                              return FlowAuthButton(
-                                onPressed: () async {
-                                  if (formKey.currentState!.validate()) {
-                                    try {
-                                      final controller = await ref.read(
-                                        userProvider.future,
-                                      );
-                                      await controller.loginUser(
-                                        _emailController.text.trim(),
-                                        _passwordController.text.trim(),
-                                      );
+                          Expanded(
+                            child: Consumer(
+                              builder: (context, ref, child) {
+                                return FlowAuthButton(
+                                  onPressed: () async {
+                                    if (formKey.currentState!.validate()) {
+                                      try {
+                                        final controller = await ref.read(
+                                          userProvider.future,
+                                        );
+                                        await controller.loginUser(
+                                          _emailController.text.trim(),
+                                          _passwordController.text.trim(),
+                                        );
 
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Login Successful!',
-                                              style: GoogleFonts.inter(
-                                                fontSize: 18.sp,
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Login Successful!',
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 18.sp,
+                                                ),
                                               ),
+                                              backgroundColor: Colors.green,
                                             ),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
-                                        Navigator.of(context).pop();
-                                      }
-                                    } catch (e) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              e.toString().split(': ')[1],
-                                              style: GoogleFonts.inter(
-                                                fontSize: 18.sp,
+                                          );
+                                          Navigator.of(context).pop();
+                                        }
+                                      } catch (e) {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                e.toString().split(': ')[1],
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 18.sp,
+                                                ),
                                               ),
+                                              backgroundColor: Colors.red,
                                             ),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
+                                          );
+                                        }
                                       }
                                     }
-                                  }
-                                },
-                                text: AppLocalizations.of(context)!.login,
-                              );
-                            },
+                                  },
+                                  text: AppLocalizations.of(context)!.login,
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),

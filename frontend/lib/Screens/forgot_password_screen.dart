@@ -108,18 +108,29 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                   final controller = await ref.read(
                                     userProvider.future,
                                   );
-                                  controller.sendOTP(_emailController.text);
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => OtpScreen(
-                                        email: _emailController.text,
+                                  await controller.sendOTP(
+                                    _emailController.text,
+                                  );
+                                  print('OTP sent successfully');
+                                  if (context.mounted) {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) => OtpScreen(
+                                          email: _emailController.text,
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(e.toString())),
-                                  );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          e.toString().split(': ').last,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                               text: AppLocalizations.of(

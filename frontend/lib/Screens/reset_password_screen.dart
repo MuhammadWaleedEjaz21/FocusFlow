@@ -109,15 +109,19 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                   final controller = await ref.read(
                                     userProvider.future,
                                   );
-                                  controller.resetPassword(
+                                  await controller.resetPassword(
                                     widget.email,
                                     _passwordController.text,
                                   );
-                                  Navigator.of(context).pop();
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
                                 } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(e.toString())),
-                                  );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(e.toString().split(': ').last)),
+                                    );
+                                  }
                                 }
                               },
                               text: AppLocalizations.of(context)!.resetPassword,
