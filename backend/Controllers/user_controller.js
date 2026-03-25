@@ -3,6 +3,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const OTP = require('../Models/otp_model');
+const { OAuth2Client } = require('google-auth-library');
+
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 const fetchUser = async (req, res) => {
     try {
@@ -83,36 +88,85 @@ const loginUser = async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) return res.status(401).json({ message: "Invalid email or password" });
 
-        // Generate access token (short-lived: 15 minutes)
         const accessToken = jwt.sign(
             { email: user.email, id: user._id },
             process.env.JWT_SECRET || 'your_jwt_secret',
             { expiresIn: '15m' }
         );
 
-        // Generate refresh token (long-lived: 7 days)
         const refreshToken = jwt.sign(
             { email: user.email, id: user._id },
             process.env.JWT_REFRESH_SECRET || 'your_jwt_refresh_secret',
             { expiresIn: '7d' }
         );
 
-        // Save refresh token to database
         user.refreshToken = refreshToken;
         await user.save();
 
         const userResponse = { email: user.email, fullName: user.fullName };
-        res.status(200).json({ 
-            message: "Login successful", 
-            accessToken, 
+        res.status(200).json({
+            message: "Login successful",
+            accessToken,
             refreshToken,
-            data: userResponse 
+            data: userResponse
         });
     } catch (error) {
         res.status(500).json({ message: "Error during login", error: error.message });
     }
 };
 
+const googleSignIn = async (req, res) => {
+    try {
+        const { idToken } = req.body;
+
+        if (!idToken) {
+            return res.status(400).json({ message: "ID Token is required" });
+        }
+
+        const ticket = await client.verifyIdToken({
+            idToken: idToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const { email, name, sub } = payload;
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            const generatePassword = sub + process.env.JWT_SECRET;
+            const hashedPassword = await bcrypt.hash(generatePassword, 10);
+
+            user = new User({ fullName: name, email, password: hashedPassword });
+            await user.save();
+        }
+
+        const accessToken = jwt.sign(
+            { email: user.email, id: user._id },
+            process.env.JWT_SECRET || 'your_jwt_secret',
+            { expiresIn: '15m' }
+        );
+
+        const refreshToken = jwt.sign(
+            { email: user.email, id: user._id },
+            process.env.JWT_REFRESH_SECRET || 'your_jwt_refresh_secret',
+            { expiresIn: '7d' }
+        );
+
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        const userResponse = { email: user.email, fullName: user.fullName };
+        res.status(200).json({
+            message: "Google Login successful",
+            accessToken,
+            refreshToken,
+            data: userResponse
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: "Error during Google Sign In", error: error.message });
+    }
+}
 
 const sendOTP = async (req, res) => {
     try {
@@ -209,26 +263,23 @@ const refreshTokenUser = async (req, res) => {
             return res.status(401).json({ message: "No refresh token provided" });
         }
 
-        // Verify refresh token
         jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'your_jwt_refresh_secret', async (err, decoded) => {
             if (err) {
                 return res.status(403).json({ message: "Invalid or expired refresh token" });
             }
 
-            // Find user and check if stored refresh token matches
             const user = await User.findOne({ email: decoded.email });
             if (!user || user.refreshToken !== refreshToken) {
                 return res.status(403).json({ message: "Refresh token mismatch" });
             }
 
-            // Generate new access token
             const newAccessToken = jwt.sign(
                 { email: user.email, id: user._id },
                 process.env.JWT_SECRET || 'your_jwt_secret',
                 { expiresIn: '15m' }
             );
 
-            res.status(200).json({ 
+            res.status(200).json({
                 message: "Token refreshed successfully",
                 accessToken: newAccessToken
             });
@@ -242,7 +293,6 @@ const logoutUser = async (req, res) => {
     try {
         const { email } = req.body;
 
-        // Clear refresh token from database
         await User.updateOne(
             { email },
             { refreshToken: null }

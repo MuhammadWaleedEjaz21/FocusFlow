@@ -157,6 +157,24 @@ class UserService {
     }
   }
 
+  Future<Map<String, String>> googleSignIn(String idToken) async {
+    final url = Uri.parse('$baseUrl/google-signin');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'idToken': idToken}),
+    );
+    if (response.statusCode == 200) {
+      final responseBody = jsonDecode(response.body);
+      return {
+        'accessToken': responseBody['accessToken'] ?? '',
+        'refreshToken': responseBody['refreshToken'] ?? '',
+      };
+    } else {
+      throw Exception('${jsonDecode(response.body)['message']}');
+    }
+  }
+
   Future<String> refreshToken(String refreshToken) async {
     final url = Uri.parse('$baseUrl/refresh-token');
     final response = await http.post(

@@ -8,6 +8,7 @@ import 'package:frontend/Widgets/flow_auth_button.dart';
 import 'package:frontend/Widgets/flow_form_field.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -185,6 +186,95 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                   },
                                   text: AppLocalizations.of(context)!.login,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      20.verticalSpace,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Consumer(
+                              builder: (context, ref, child) {
+                                return OutlinedButton.icon(
+                                  onPressed: () async {
+                                    try {
+                                      final GoogleSignInAccount googleUser =
+                                          await GoogleSignIn.instance
+                                              .authenticate();
+                                      final GoogleSignInAuthentication
+                                      googleAuth = googleUser.authentication;
+                                      final String? idToken =
+                                          googleAuth.idToken;
+                                      if (idToken != null) {
+                                        final controller = await ref.read(
+                                          userProvider.future,
+                                        );
+                                        await controller.googleSignIn(
+                                          idToken,
+                                          googleUser.email,
+                                        );
+
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Google Login Successful!',
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 18.sp,
+                                                ),
+                                              ),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                          Navigator.of(context).pop();
+                                        }
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Google Sign-In Failed: $e',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 18.sp,
+                                              ),
+                                            ),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  icon: Image.network(
+                                    'https://upload.wikimedia.org/wikipedia/commons/archive/c/c1/20230822192910%21Google_%22G%22_logo.svg',
+                                    height: 24.h,
+                                  ),
+                                  label: Text(
+                                    'Sign in with Google',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Theme.of(context).hintColor,
+                                    ),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 15.h,
+                                    ),
+                                    side: BorderSide(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                    ),
+                                  ),
                                 );
                               },
                             ),

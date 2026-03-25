@@ -100,6 +100,28 @@ class UserController {
     return tokens['accessToken'] ?? '';
   }
 
+  Future<String> googleSignIn(String idToken, String email) async {
+    final userService = ref.watch(userServiceProvider);
+    final localDB = ref.watch(localDBServiceProvider);
+    await localDB.clearDB();
+    final tokens = await userService.googleSignIn(idToken);
+
+    final prefs = await ref.watch(prefProvider.future);
+    await prefs.setString('accessToken', tokens['accessToken'] ?? '');
+    await prefs.setString('refreshToken', tokens['refreshToken'] ?? '');
+    await prefs.setString('userEmail', email);
+    await prefs.setBool('isLoggedIn', true);
+
+    ref.read(isLoggedInProvider.notifier).state = true;
+    ref.invalidate(prefProvider);
+    ref.invalidate(accessTokenProvider);
+    ref.invalidate(refreshTokenProvider);
+    ref.invalidate(fetchuserProvider.call(email));
+    ref.invalidate(tasksListProvider);
+
+    return tokens['accessToken'] ?? '';
+  }
+
   Future<String> refreshAccessToken() async {
     final userService = ref.watch(userServiceProvider);
     final prefs = await ref.watch(prefProvider.future);

@@ -11,9 +11,11 @@ import 'package:frontend/Services/localdb_service.dart';
 import 'package:frontend/Services/push_notification_service.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await GoogleSignIn.instance.initialize();
   final prefs = await SharedPreferences.getInstance();
   await localDBInitialize();
   await initializeNotifications();
