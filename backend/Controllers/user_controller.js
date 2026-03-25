@@ -310,6 +310,7 @@ module.exports = {
     updateUser,
     deleteUser,
     loginUser,
+    googleSignIn,
     refreshTokenUser,
     logoutUser,
     sendOTP,
