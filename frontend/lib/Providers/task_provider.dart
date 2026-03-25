@@ -86,9 +86,8 @@ class TaskController {
 
   Future<void> addToGoogleCalendar(TaskModel task) async {
     try {
-      final authz = await GoogleSignIn.instance.authorizationClient.authorizeScopes([
-        'https://www.googleapis.com/auth/calendar.events',
-      ]);
+      final authz = await GoogleSignIn.instance.authorizationClient
+          .authorizeScopes(['https://www.googleapis.com/auth/calendar.events']);
       await ref
           .watch(taskServiceProvider)
           .addToGoogleCalendar(task, token, authz.accessToken);
