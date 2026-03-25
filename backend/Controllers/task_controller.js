@@ -1,16 +1,18 @@
 const Task = require('../Models/task_model');
+const { google } = require('googleapis');
+
 
 
 const fetchTasks = async (req, res) => {
     try {
         const tasks = await Task.find({ userEmail: req.params.userEmail });
-        res.status(200).json({message : "Tasks fetched successfully",data : tasks });
+        res.status(200).json({ message: "Tasks fetched successfully", data: tasks });
     } catch (error) {
         res.status(500).json({ message: "Error fetching tasks", error: error.message });
     }
 };
 
-const addTask = async (req,res) => {
+const addTask = async (req, res) => {
     try {
         const newTask = new Task(req.body);
         await newTask.save();
@@ -20,7 +22,7 @@ const addTask = async (req,res) => {
     }
 };
 
-const updateTask = async (req,res) => {
+const updateTask = async (req, res) => {
     try {
         const updatedTask = await Task.findOneAndUpdate(
             { uniqueId: req.params.uniqueId },
@@ -36,7 +38,7 @@ const updateTask = async (req,res) => {
     }
 };
 
-const deleteTask = async (req,res) => {
+const deleteTask = async (req, res) => {
     try {
         const deletedTask = await Task.findOneAndDelete({ uniqueId: req.params.uniqueId });
         if (!deletedTask) {
@@ -48,9 +50,33 @@ const deleteTask = async (req,res) => {
     }
 };
 
+const addToGoogleCalendar = async (req, res) => {
+    try {
+        const { task, accessToken } = req.body;
+        const calendar = google.calendar({ version: 'v3', auth: accessToken });
+        const event = {
+            summary: task.title,
+            description: task.description,
+            start: {
+                dateTime: task.dueDate,
+                timeZone: 'Asia/Karachi',
+            },
+            end: {
+                dateTime: task.dueDate,
+                timeZone: 'Asia/Karachi',
+            },
+        };
+        const response = await calendar.events.insert({ calendarId: 'primary', resource: event });
+        res.status(200).json({ message: "Task added to Google Calendar successfully", data: response.data });
+    } catch (error) {
+        res.status(500).json({ message: "Error adding task to Google Calendar", error: error.message });
+    }
+};
+
 module.exports = {
     fetchTasks,
     addTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    addToGoogleCalendar
 };

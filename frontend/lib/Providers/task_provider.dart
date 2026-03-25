@@ -82,4 +82,8 @@ class TaskController {
     }
     ref.invalidate(tasksListProvider(task.userEmail));
   }
+
+  Future<void> addToGoogleCalendar(TaskModel task) async {
+    await ref.watch(taskServiceProvider).addToGoogleCalendar(task, token);
+  }
 }

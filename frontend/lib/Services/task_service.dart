@@ -172,4 +172,51 @@ class TaskService {
       throw Exception('${errorBody['message']}');
     }
   }
+
+  Future<void> addToGoogleCalendar(TaskModel task, String token) async {
+    final url = Uri.parse('$baseURL/add-to-google-calendar');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'task': task.toJson(),
+        'accessToken': token,
+      }),
+    );
+
+    if (response.statusCode == 401) {
+      if (onTokenExpired != null) {
+        try {
+          final newToken = await onTokenExpired!();
+          final retryResponse = await http.post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $newToken',
+            },
+            body: jsonEncode({
+              'task': task.toJson(),
+              'accessToken': newToken,
+            }),
+          );
+          if (retryResponse.statusCode != 200) {
+            final errorBody = jsonDecode(retryResponse.body);
+            throw Exception('${errorBody['message']}');
+          }
+          return;
+        } catch (e) {
+          throw Exception('Token refresh failed: $e');
+        }
+      }
+      throw Exception('Token expired');
+    }
+
+    if (response.statusCode != 200) {
+      final errorBody = jsonDecode(response.body);
+      throw Exception('${errorBody['message']}');
+    }
+  }
 }

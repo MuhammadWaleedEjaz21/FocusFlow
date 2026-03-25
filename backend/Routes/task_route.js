@@ -7,6 +7,7 @@ router.use(authMiddleware);
 
 router.get('/:userEmail', TaskCoontroller.fetchTasks);
 router.post('/', TaskCoontroller.addTask);
+router.post('/add-to-google-calendar', TaskCoontroller.addToGoogleCalendar);
 router.patch('/:uniqueId', TaskCoontroller.updateTask);
 router.delete('/:uniqueId', TaskCoontroller.deleteTask);
 

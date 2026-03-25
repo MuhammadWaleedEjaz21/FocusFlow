@@ -222,6 +222,46 @@ class FlowTaskItem extends ConsumerWidget {
                   child: Text('Delete'),
                 ),
               ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (!useLocalDb) {
+                      try {
+                        final taskController = await ref.read(taskProvider.future);
+                        await taskController.addToGoogleCalendar(currentTask);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Added to Google Calendar')),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed: $e')),
+                          );
+                        }
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Cannot add local tasks to Calendar')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    textStyle: GoogleFonts.inter(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  child: Text('Calendar', maxLines: 1),
+                ),
+              ),
             ],
           ),
         ),
