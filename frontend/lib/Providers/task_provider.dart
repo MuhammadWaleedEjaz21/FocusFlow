@@ -3,6 +3,7 @@ import 'package:frontend/Models/task_model.dart';
 import 'package:frontend/Providers/push_notifications_provider.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Services/task_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final prefs = SharedPreferences.getInstance();
@@ -84,6 +85,15 @@ class TaskController {
   }
 
   Future<void> addToGoogleCalendar(TaskModel task) async {
-    await ref.watch(taskServiceProvider).addToGoogleCalendar(task, token);
+    try {
+      final authz = await GoogleSignIn.instance.authorizationClient.authorizeScopes([
+        'https://www.googleapis.com/auth/calendar.events',
+      ]);
+      await ref
+          .watch(taskServiceProvider)
+          .addToGoogleCalendar(task, token, authz.accessToken);
+    } catch (e) {
+      print("Google Auth error: $e");
+    }
   }
 }

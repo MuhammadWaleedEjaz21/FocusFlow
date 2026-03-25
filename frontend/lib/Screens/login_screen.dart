@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/Providers/user_provider.dart';
 import 'package:frontend/Screens/forgot_password_screen.dart';
 import 'package:frontend/Screens/signup_screen.dart';
@@ -235,6 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       }
                                     } catch (e) {
+                                      debugPrint(e.toString());
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(
                                           context,
@@ -252,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       }
                                     }
                                   },
-                                  icon: Image.network(
+                                  icon: SvgPicture.network(
                                     'https://upload.wikimedia.org/wikipedia/commons/archive/c/c1/20230822192910%21Google_%22G%22_logo.svg',
                                     height: 24.h,
                                   ),

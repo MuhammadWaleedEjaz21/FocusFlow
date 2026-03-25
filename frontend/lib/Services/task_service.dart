@@ -173,7 +173,8 @@ class TaskService {
     }
   }
 
-  Future<void> addToGoogleCalendar(TaskModel task, String token) async {
+  Future<void> addToGoogleCalendar(
+      TaskModel task, String token, String googleAccessToken) async {
     final url = Uri.parse('$baseURL/add-to-google-calendar');
     final response = await http.post(
       url,
@@ -183,7 +184,7 @@ class TaskService {
       },
       body: jsonEncode({
         'task': task.toJson(),
-        'accessToken': token,
+        'accessToken': googleAccessToken,
       }),
     );
 
@@ -199,7 +200,7 @@ class TaskService {
             },
             body: jsonEncode({
               'task': task.toJson(),
-              'accessToken': newToken,
+              'accessToken': googleAccessToken,
             }),
           );
           if (retryResponse.statusCode != 200) {

@@ -15,7 +15,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GoogleSignIn.instance.initialize();
+  await GoogleSignIn.instance.initialize(
+    serverClientId:
+        '249985332803-bnuqpq3ea73487idcj8l5k6c8j0nqkin.apps.googleusercontent.com',
+  );
   final prefs = await SharedPreferences.getInstance();
   await localDBInitialize();
   await initializeNotifications();
